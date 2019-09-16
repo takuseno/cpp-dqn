@@ -61,7 +61,8 @@ void Model::build()
 
 void Model::infer(const uint8_t* obs_t, float* q_values)
 {
-  set_image(obs_t_, obs_t, 1);
+  vector<const uint8_t*> v_obs_t = {obs_t};
+  set_image(obs_t_, v_obs_t);
   q_values_->forward(true, true);
   float_t *q_values_d =
     q_values_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, false);
@@ -69,15 +70,13 @@ void Model::infer(const uint8_t* obs_t, float* q_values)
 }
 
 
-float Model::train(const uint8_t* obss_t, const uint8_t* acts_t,
-                  const float* rews_tp1, const uint8_t* obss_tp1,
-                  const float* ters_tp1)
+float Model::train(Batch_t batch)
 {
-  set_image(obss_t_, obss_t, batch_size_);
-  set_image(obss_tp1_, obss_tp1, batch_size_);
-  set_data(acts_t_, acts_t, batch_size_);
-  set_data(rews_tp1_, rews_tp1, batch_size_);
-  set_data(ters_tp1_, ters_tp1, batch_size_);
+  set_image(obss_t_, get<INDEX_OBS_T>(batch));
+  set_data(acts_t_, get<INDEX_ACT_T>(batch));
+  set_data(rews_tp1_, get<INDEX_REW_TP1>(batch));
+  set_image(obss_tp1_, get<INDEX_OBS_TP1>(batch));
+  set_data(ters_tp1_, get<INDEX_TER_TP1>(batch));
 
   solver_->zero_grad();
   loss_->forward(false, true);
@@ -114,27 +113,27 @@ CgVariablePtr Model::q_network(CgVariablePtr obss_t, ParameterDirectory params)
 };
 
 
-void Model::set_image(CgVariablePtr x, const uint8_t* image, int batch_size)
+void Model::set_image(CgVariablePtr x, vector<const uint8_t*> image)
 {
   float_t *x_d =
       x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   const int stride = x->variable()->strides()[0];
-  for (int i = 0; i < batch_size; ++i) {
+  for (int i = 0; i < image.size(); ++i) {
     for (int j = 0; j < stride; ++j) {
-      x_d[i * stride + j] = (float_t) image[i * stride + j] / 255.0;
+      x_d[i * stride + j] = (float_t) image[i][stride + j] / 255.0;
     }
   }
 };
 
 
 template <typename T>
-void Model::set_data(CgVariablePtr x, const T* data, int batch_size)
+void Model::set_data(CgVariablePtr x, vector<T> data)
 {
   float_t *x_d =
     x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
-  for (int i = 0; i < batch_size; ++i) {
+  for (int i = 0; i < data.size(); ++i) {
     x_d[i] = data[i];
   }
 };
 
-}
+};

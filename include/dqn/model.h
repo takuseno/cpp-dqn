@@ -1,11 +1,12 @@
 #pragma once
 
+#include <dqn/buffer.h>
 #include <nbla/functions.hpp>
 #include <nbla/parametric_functions.hpp>
 #include <nbla/solver/rmsprop.hpp>
 #include <nbla/computation_graph/computation_graph.hpp>
 
-using std::make_shared;
+using namespace std;
 using namespace nbla;
 namespace f = nbla::functions;
 namespace pf = nbla::parametric_functions;
@@ -17,8 +18,7 @@ class Model
 public:
   Model(int num_of_actions, int batch_size, float gamma, float lr, Context ctx);
   void infer(const uint8_t* obs_t, float* q_values);
-  float train(const uint8_t* obss_t, const uint8_t* acts_t, const float* rews_tp1,
-              const uint8_t* obss_tp1, const float* ters_tp1);
+  float train(Batch_t batch);
   void sync_target();
 
 private:
@@ -35,9 +35,9 @@ private:
 
   void build();
   CgVariablePtr q_network(CgVariablePtr obss_t, ParameterDirectory params);
-  void set_image(CgVariablePtr x, const uint8_t* image, int batch_size);
+  void set_image(CgVariablePtr x, vector<const uint8_t*> image);
   template <typename T>
-  void set_data(CgVariablePtr x, const T* data, int batch_size);
+  void set_data(CgVariablePtr x, vector<T> data);
 };
 
-}
+};
