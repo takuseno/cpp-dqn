@@ -100,11 +100,14 @@ void Model::sync_target()
 
 CgVariablePtr Model::q_network(CgVariablePtr obss_t, ParameterDirectory params)
 {
-  auto h = pf::convolution(obss_t, 32, 8, {4, 4}, params["conv1"]);
+  pf::ConvolutionOpts opts1 = pf::ConvolutionOpts().stride({4, 4});
+  auto h = pf::convolution(obss_t, 1, 32, {8, 8}, params["conv1"], opts1);
   h = f::relu(h, true);
-  h = pf::convolution(h, 64, 4, {2, 2}, params["conv2"]);
+  pf::ConvolutionOpts opts2 = pf::ConvolutionOpts().stride({2, 2});
+  h = pf::convolution(h, 1, 64, {4, 4}, params["conv2"], opts2);
   h = f::relu(h, true);
-  h = pf::convolution(h, 64, 3, {1, 1}, params["conv3"]);
+  pf::ConvolutionOpts opts3 = pf::ConvolutionOpts().stride({1, 1});
+  h = pf::convolution(h, 1, 64, {3, 3}, params["conv3"], opts3);
   h = f::relu(h, true);
   h = pf::affine(h, 1, 512, params["fc1"]);
   h = f::relu(h, true);
