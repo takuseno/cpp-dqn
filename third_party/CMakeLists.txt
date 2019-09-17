@@ -39,3 +39,10 @@ add_subdirectory(googletest-release-1.7.0)
 # ALE
 download_and_extract_library(Arcade-Learning-Environment-master .zip https://github.com/mgbellemare/Arcade-Learning-Environment/archive/master.zip)
 add_subdirectory(Arcade-Learning-Environment-master)
+
+# Download ROMs
+file(DOWNLOAD
+    http://www.atarimania.com/roms/Roms.rar 
+    ${CMAKE_SOURCE_DIR}/third_party/Roms.rar
+    SHOW_PROGRESS)
+execute_process(COMMAND unrar e ${CMAKE_SOURCE_DIR}/third_party/Roms.rar)
