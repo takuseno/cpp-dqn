@@ -11,8 +11,21 @@ find_package(ZLIB REQUIRED)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
+# SDL
+if (USE_SDL)
+  find_library(SDL_LIBRARY SDL HINTS /usr/local/lib)
+  target_link_libraries(dqn PUBLIC ${SDL_LIBRARY})
+  find_library(SDL_GFX_LIBRARY SDL_gfx HINTS /usr/local/lib)
+  target_link_libraries(dqn PUBLIC ${SDL_GFX_LIBRARY})
+  find_library(SDL_IMAGE_LIBRARY SDL_image HINTS /usr/local/lib)
+  target_link_libraries(dqn PUBLIC ${SDL_IMAGE_LIBRARY})
+  find_library(SDL_MAIN_LIBRARY SDLmain HINTS /usr/local/lib)
+  target_link_libraries(dqn ${SDL_MAIN_LIBRARY})
+endif()
+
+find_library(NNABLA_LIBRARY nnabla HINTS /usr/local/lib)
 target_link_libraries(dqn
-  /usr/local/lib/libnnabla.dylib
+  ${NNABLA_LIBRARY}
   ${PROJECT_SOURCE_DIR}/third_party/Arcade-Learning-Environment-master/libale.so
   ${OpenCV_LIBS}
   ${ZLIB_LIBRARIES})

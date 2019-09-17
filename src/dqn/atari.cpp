@@ -16,16 +16,18 @@ Atari::Atari(const char* rom, bool gui)
 
 Atari::~Atari()
 {
-  delete current_screen_;
+  delete[] current_screen_;
 }
 
 
 void Atari::step(uint8_t act, uint8_t* obs, float* rew, float* ter)
 {
   *rew = ale_->act((Action) act);
-  sum_of_rewards_ += *rew;
   *ter = ale_->game_over() ? 1.0 : 0.0;
   get_observation(obs);
+  sum_of_rewards_ += *rew;
+  ++t_;
+  ++t_in_episode_;
 }
 
 
@@ -33,6 +35,7 @@ void Atari::reset(uint8_t* obs)
 {
   ale_->reset_game();
   get_observation(obs);
+  reset_data();
 }
 
 
@@ -40,7 +43,6 @@ void Atari::get_observation(uint8_t* obs)
 {
   update_current_screen();
   copy_screen_to_obs(obs);
-  reset_data();
 }
 
 

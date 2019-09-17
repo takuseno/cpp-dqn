@@ -22,7 +22,7 @@ function(download_and_extract_library NAME EXT URL)
         ")
         error() # Place Unknown command to stop cmake process here.
       endif()
-      
+
     endif()
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E
@@ -37,12 +37,23 @@ download_and_extract_library(googletest-release-1.7.0 .zip https://github.com/go
 add_subdirectory(googletest-release-1.7.0)
 
 # ALE
+if(USE_SDL)
+  add_definitions(-D__USE_SDL)
+endif()
 download_and_extract_library(Arcade-Learning-Environment-master .zip https://github.com/mgbellemare/Arcade-Learning-Environment/archive/master.zip)
 add_subdirectory(Arcade-Learning-Environment-master)
 
 # Download ROMs
-file(DOWNLOAD
-    http://www.atarimania.com/roms/Roms.rar 
-    ${CMAKE_SOURCE_DIR}/third_party/Roms.rar
-    SHOW_PROGRESS)
-execute_process(COMMAND unrar e ${CMAKE_SOURCE_DIR}/third_party/Roms.rar)
+if(NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/third_party/ROMS)
+  message("Downloading ROMs")
+  file(DOWNLOAD
+      http://www.atarimania.com/roms/Roms.rar 
+      ${CMAKE_SOURCE_DIR}/third_party/Roms.rar
+      SHOW_PROGRESS)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E
+    chdir ${CMAKE_SOURCE_DIR}/third_party
+    unrar e ${CMAKE_SOURCE_DIR}/third_party/Roms.rar)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E
+    chdir ${CMAKE_SOURCE_DIR}/third_party
+    unzip e ${CMAKE_SOURCE_DIR}/third_party/ROMS.zip)
+endif()
