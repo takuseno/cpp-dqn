@@ -1,6 +1,6 @@
 #include <ale_interface.hpp>
-#include <memory>
 #include <array>
+#include <memory>
 
 using namespace std;
 
@@ -13,13 +13,12 @@ using namespace std;
 
 namespace dqn {
 
-class Atari
-{
+class Atari {
 public:
-  Atari(const char* rom, bool gui);
+  Atari(const char *rom, bool gui);
   ~Atari();
-  void step(uint8_t act, uint8_t* obs, float* rew, float* ter);
-  void reset(uint8_t* obs);
+  void step(uint8_t act, uint8_t *obs, float *rew, float *ter);
+  void reset(uint8_t *obs);
   int get_action_size();
 
 private:
@@ -31,9 +30,9 @@ private:
   ActionVect legal_actions_;
 
   void reset_data();
-  void get_observation(uint8_t* obs);
+  void get_observation(uint8_t *obs);
   void update_current_screen();
-  void copy_screen_to_obs(uint8_t* obs);
+  void copy_screen_to_obs(uint8_t *obs);
 };
 
-};
+}; // namespace dqn

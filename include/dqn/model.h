@@ -1,10 +1,10 @@
 #pragma once
 
 #include <dqn/buffer.h>
+#include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/functions.hpp>
 #include <nbla/parametric_functions.hpp>
 #include <nbla/solver/rmsprop.hpp>
-#include <nbla/computation_graph/computation_graph.hpp>
 
 using namespace std;
 using namespace nbla;
@@ -13,11 +13,10 @@ namespace pf = nbla::parametric_functions;
 
 namespace dqn {
 
-class Model
-{
+class Model {
 public:
   Model(int num_of_actions, int batch_size, float gamma, float lr, Context ctx);
-  void infer(const uint8_t* obs_t, float* q_values);
+  void infer(const uint8_t *obs_t, float *q_values);
   float train(Batch_t batch);
   void sync_target();
 
@@ -35,9 +34,8 @@ private:
 
   void build();
   CgVariablePtr q_network(CgVariablePtr obss_t, ParameterDirectory params);
-  void set_image(CgVariablePtr x, vector<const uint8_t*> image);
-  template <typename T>
-  void set_data(CgVariablePtr x, vector<T> data);
+  void set_image(CgVariablePtr x, vector<const uint8_t *> image);
+  template <typename T> void set_data(CgVariablePtr x, vector<T> data);
 };
 
-};
+}; // namespace dqn

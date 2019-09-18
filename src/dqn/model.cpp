@@ -3,20 +3,17 @@
 namespace dqn {
 
 Model::Model(int num_of_actions, int batch_size, float gamma, float lr,
-             Context ctx)
-{
-   num_of_actions_ = num_of_actions;
-   batch_size_ = batch_size;
-   gamma_ = gamma;
-   lr_ = lr;
-   ctx_ = ctx;
-   cpu_ctx_ = Context({"cpu:float"}, "CpuCachedArray", "0");
-   build();
+             Context ctx) {
+  num_of_actions_ = num_of_actions;
+  batch_size_ = batch_size;
+  gamma_ = gamma;
+  lr_ = lr;
+  ctx_ = ctx;
+  cpu_ctx_ = Context({"cpu:float"}, "CpuCachedArray", "0");
+  build();
 };
 
-
-void Model::build()
-{
+void Model::build() {
   params_ = ParameterDirectory();
 
   // entry variables
@@ -58,20 +55,17 @@ void Model::build()
   solver_->set_parameters(params_.get_parameters());
 };
 
-
-void Model::infer(const uint8_t* obs_t, float* q_values)
-{
-  vector<const uint8_t*> v_obs_t = {obs_t};
+void Model::infer(const uint8_t *obs_t, float *q_values) {
+  vector<const uint8_t *> v_obs_t = {obs_t};
   set_image(obs_t_, v_obs_t);
   q_values_->forward(true, true);
   float_t *q_values_d =
-    q_values_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, false);
+      q_values_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_,
+                                                                false);
   memcpy(q_values, q_values_d, sizeof(float) * num_of_actions_);
 }
 
-
-float Model::train(Batch_t batch)
-{
+float Model::train(Batch_t batch) {
   set_image(obss_t_, get<INDEX_OBS_T>(batch));
   set_data(acts_t_, get<INDEX_ACT_T>(batch));
   set_data(rews_tp1_, get<INDEX_REW_TP1>(batch));
@@ -84,22 +78,19 @@ float Model::train(Batch_t batch)
   loss_->backward(nullptr, true);
   solver_->update();
 
-  float_t* loss_d =
-    loss_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, false);
+  float_t *loss_d =
+      loss_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, false);
   return loss_d[0];
 };
 
-
-void Model::sync_target()
-{
+void Model::sync_target() {
   for (int i = 0; i < assigns_.size(); ++i) {
     assigns_[i]->forward(true, true);
   }
 };
 
-
-CgVariablePtr Model::q_network(CgVariablePtr obss_t, ParameterDirectory params)
-{
+CgVariablePtr Model::q_network(CgVariablePtr obss_t,
+                               ParameterDirectory params) {
   pf::ConvolutionOpts opts1 = pf::ConvolutionOpts().stride({4, 4});
   auto h = pf::convolution(obss_t, 1, 32, {8, 8}, params["conv1"], opts1);
   h = f::relu(h, true);
@@ -115,28 +106,23 @@ CgVariablePtr Model::q_network(CgVariablePtr obss_t, ParameterDirectory params)
   return h;
 };
 
-
-void Model::set_image(CgVariablePtr x, vector<const uint8_t*> image)
-{
+void Model::set_image(CgVariablePtr x, vector<const uint8_t *> image) {
   float_t *x_d =
       x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   const int stride = x->variable()->strides()[0];
   for (int i = 0; i < image.size(); ++i) {
     for (int j = 0; j < stride; ++j) {
-      x_d[i * stride + j] = (float_t) image[i][stride + j] / 255.0;
+      x_d[i * stride + j] = (float_t)image[i][stride + j] / 255.0;
     }
   }
 };
 
-
-template <typename T>
-void Model::set_data(CgVariablePtr x, vector<T> data)
-{
+template <typename T> void Model::set_data(CgVariablePtr x, vector<T> data) {
   float_t *x_d =
-    x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
+      x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   for (int i = 0; i < data.size(); ++i) {
     x_d[i] = data[i];
   }
 };
 
-};
+}; // namespace dqn
