@@ -7,10 +7,6 @@ target_include_directories(dqn PUBLIC ${PROJECT_SOURCE_DIR}/third_party/Arcade-L
 target_include_directories(dqn PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(dqn PUBLIC /usr/local/include)
 
-find_package(ZLIB REQUIRED)
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-
 # SDL
 if (USE_SDL)
   find_library(SDL_LIBRARY SDL HINTS /usr/local/lib)
@@ -20,12 +16,11 @@ if (USE_SDL)
   find_library(SDL_IMAGE_LIBRARY SDL_image HINTS /usr/local/lib)
   target_link_libraries(dqn PUBLIC ${SDL_IMAGE_LIBRARY})
   find_library(SDL_MAIN_LIBRARY SDLmain HINTS /usr/local/lib)
-  target_link_libraries(dqn ${SDL_MAIN_LIBRARY})
+  target_link_libraries(dqn PUBLIC ${SDL_MAIN_LIBRARY})
 endif()
 
 find_library(NNABLA_LIBRARY nnabla HINTS /usr/local/lib)
 target_link_libraries(dqn
+  PUBLIC
   ${NNABLA_LIBRARY}
-  ${PROJECT_SOURCE_DIR}/third_party/Arcade-Learning-Environment-master/libale.so
-  ${OpenCV_LIBS}
-  ${ZLIB_LIBRARIES})
+  ${PROJECT_SOURCE_DIR}/third_party/Arcade-Learning-Environment-master/libale.so)
