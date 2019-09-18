@@ -3,8 +3,7 @@
 
 using namespace std;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
   if (argc != 2) {
     cout << "./run_game <path-to-rom>" << endl;
     return 1;
@@ -18,7 +17,7 @@ int main(int argc, char* argv[])
   uniform_int_distribution<> dist(0, action_size - 1);
 
   int episode = 0;
-  uint8_t* obs = new uint8_t[RESIZED_IMAGE_SIZE];
+  uint8_t *obs = new uint8_t[RESIZED_IMAGE_SIZE];
   while (episode < 100) {
     float rew = 0.0;
     float ter = 0.0;
@@ -30,7 +29,7 @@ int main(int argc, char* argv[])
         if (obs[i] > max_pixel)
           max_pixel = obs[i];
       }
-      cout << "reward: " << rew << " max pixel: " << (int) max_pixel << endl;
+      cout << "reward: " << rew << " max pixel: " << (int)max_pixel << endl;
     }
     ++episode;
   }
