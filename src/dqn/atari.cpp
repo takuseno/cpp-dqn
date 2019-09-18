@@ -6,8 +6,10 @@ Atari::Atari(const char* rom, bool gui)
 {
   ale_ = make_shared<ALEInterface>(gui);
   ale_->loadROM(rom);
+  legal_actions_ = ale_->getMinimalActionSet();
 
-  current_screen_ = new uint8_t[RAW_IMAGE_SIZE];
+  // raw image buffer
+  current_screen_ = vector<uint8_t>(RAW_IMAGE_SIZE);
 
   t_ = 0;
   reset_data();
@@ -16,13 +18,12 @@ Atari::Atari(const char* rom, bool gui)
 
 Atari::~Atari()
 {
-  delete[] current_screen_;
 }
 
 
 void Atari::step(uint8_t act, uint8_t* obs, float* rew, float* ter)
 {
-  *rew = ale_->act((Action) act);
+  *rew = ale_->act(legal_actions_[act]);
   *ter = ale_->game_over() ? 1.0 : 0.0;
   get_observation(obs);
   sum_of_rewards_ += *rew;
@@ -48,9 +49,7 @@ void Atari::get_observation(uint8_t* obs)
 
 void Atari::update_current_screen()
 {
-  vector<uint8_t> screen;
-  ale_->getScreenGrayscale(screen);
-  memcpy(current_screen_, screen.data(), sizeof(uint8_t) * RAW_IMAGE_SIZE);
+  ale_->getScreenGrayscale(current_screen_);
 }
 
 
@@ -59,12 +58,18 @@ void Atari::copy_screen_to_obs(uint8_t* obs)
   for (int i = 0; i < RESIZED_IMAGE_HEIGHT; ++i) {
     for (int j = 0; j < RESIZED_IMAGE_WIDTH; ++j) {
       int index = i * RESIZED_IMAGE_WIDTH + j;
-      int target_y = int((float) i / RESIZED_Y_RATIO);
-      int target_x = int((float) j / RESIZED_X_RATIO);
+      int target_y = (float) i * RAW_IMAGE_HEIGHT / RESIZED_IMAGE_HEIGHT;
+      int target_x = (float) j * RAW_IMAGE_WIDTH / RESIZED_IMAGE_WIDTH;
       int target_index = target_y * RAW_IMAGE_WIDTH + target_x;
       obs[index] = current_screen_[target_index];
     }
   }
+}
+
+
+int Atari::get_action_size()
+{
+  return legal_actions_.size();
 }
 
 
