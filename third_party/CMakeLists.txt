@@ -31,7 +31,6 @@ function(download_and_extract_library NAME EXT URL)
   endif()
 endfunction()
 
-
 # google test
 download_and_extract_library(googletest-release-1.7.0 .zip https://github.com/google/googletest/archive/release-1.7.0.zip)
 add_subdirectory(googletest-release-1.7.0)
@@ -44,16 +43,16 @@ download_and_extract_library(Arcade-Learning-Environment-master .zip https://git
 add_subdirectory(Arcade-Learning-Environment-master)
 
 # Download ROMs
-if(NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/third_party/ROMS)
+if(NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/atari_roms)
   message("Downloading ROMs")
   file(DOWNLOAD
-      http://www.atarimania.com/roms/Roms.rar 
-      ${CMAKE_SOURCE_DIR}/third_party/Roms.rar
+      https://github.com/openai/atari-py/archive/0.2.6.zip
+      ${CMAKE_SOURCE_DIR}/third_party/0.2.6.zip
       SHOW_PROGRESS)
   execute_process(COMMAND ${CMAKE_COMMAND} -E
     chdir ${CMAKE_SOURCE_DIR}/third_party
-    unrar e ${CMAKE_SOURCE_DIR}/third_party/Roms.rar)
+    unzip 0.2.6.zip)
   execute_process(COMMAND ${CMAKE_COMMAND} -E
-    chdir ${CMAKE_SOURCE_DIR}/third_party
-    unzip e ${CMAKE_SOURCE_DIR}/third_party/ROMS.zip)
+    chdir ${CMAKE_SOURCE_DIR}/third_party/atari-py-0.2.6
+    mv atari_py/atari_roms ${CMAKE_SOURCE_DIR}/atari_roms)
 endif()
