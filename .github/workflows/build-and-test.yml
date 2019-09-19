@@ -8,11 +8,11 @@ jobs:
     steps:
       - name: Setup to build NNabla
         run: |
-          apt-get update
-          apt-get install build-essential cmake python python-pip libarchive-dev
-          pip install pyyaml mako
-          add-apt-repository ppa:maarten-fonville/protobuf
-          apt install protobuf-compiler libprotoc-dev libprotobuf-dev
+          sudo apt-get update
+          sudo apt-get install build-essential cmake python python-pip libarchive-dev
+          sudo -H pip install pyyaml mako
+          sudo add-apt-repository ppa:maarten-fonville/protobuf
+          sudo apt install protobuf-compiler libprotoc-dev libprotobuf-dev
       - name: Download NNabla
         run: |
           wget https://github.com/sony/nnabla/archive/v1.1.0.zip
@@ -23,7 +23,7 @@ jobs:
           cd nnabla-1.1.0/build
           cmake .. -DBUILD_CPP_UTILS=ON -DBUILD_PYTHON_PACKAGE=OFF -DNNABLA_UTILS_WITH_HDF5=OFF
           make
-          make install
+          sudo make install
           cd ../..
 
       - name: Build cpp-dqn
