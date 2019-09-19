@@ -1,3 +1,5 @@
+![](https://github.com/takuseno/cpp-dqn/workflows/Build%20and%20Test/badge.svg)
+
 # cpp-dqn
 Deep Q-Network implementation written in C++ with NNabla.
 

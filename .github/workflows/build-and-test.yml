@@ -32,10 +32,14 @@ jobs:
           sudo make install
           cd ../..
 
+      - uses: actions/checkout@v1
       - name: Build cpp-dqn
         run: |
-          cmake -DUSE_SDL=OFF
+          mkdir build
+          cd build
+          cmake .. -DUSE_SDL=OFF
           make
+          cd ../
 
       - name: Test
         run: ./tests/dqntest
