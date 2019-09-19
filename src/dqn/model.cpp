@@ -55,8 +55,8 @@ void Model::build() {
   solver_->set_parameters(params_.get_parameters());
 };
 
-void Model::infer(const uint8_t *obs_t, float *q_values) {
-  vector<const uint8_t *> v_obs_t = {obs_t};
+void Model::infer(const array<uint8_t, OBS_SIZE> &obs_t, float *q_values) {
+  vector<array<uint8_t, OBS_SIZE>*> v_obs_t = {(array<uint8_t, OBS_SIZE>*)&obs_t};
   set_image(obs_t_, v_obs_t);
   q_values_->forward(true, true);
   float_t *q_values_d =
@@ -65,12 +65,12 @@ void Model::infer(const uint8_t *obs_t, float *q_values) {
   memcpy(q_values, q_values_d, sizeof(float) * num_of_actions_);
 }
 
-float Model::train(Batch_t batch) {
-  set_image(obss_t_, get<INDEX_OBS_T>(batch));
-  set_data(acts_t_, get<INDEX_ACT_T>(batch));
-  set_data(rews_tp1_, get<INDEX_REW_TP1>(batch));
-  set_image(obss_tp1_, get<INDEX_OBS_TP1>(batch));
-  set_data(ters_tp1_, get<INDEX_TER_TP1>(batch));
+float Model::train(BatchPtr batch) {
+  set_image(obss_t_, batch->obss_t);
+  set_data(acts_t_, batch->acts_t);
+  set_data(rews_tp1_, batch->rews_tp1);
+  set_image(obss_tp1_, batch->obss_tp1);
+  set_data(ters_tp1_, batch->ters_tp1);
 
   solver_->zero_grad();
   loss_->forward(false, true);
@@ -106,18 +106,18 @@ CgVariablePtr Model::q_network(CgVariablePtr obss_t,
   return h;
 };
 
-void Model::set_image(CgVariablePtr x, vector<const uint8_t *> image) {
+void Model::set_image(CgVariablePtr x, const vector<array<uint8_t, OBS_SIZE>*>& image) {
   float_t *x_d =
       x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   const int stride = x->variable()->strides()[0];
   for (int i = 0; i < image.size(); ++i) {
     for (int j = 0; j < stride; ++j) {
-      x_d[i * stride + j] = (float_t)image[i][stride + j] / 255.0;
+      x_d[i * stride + j] = (float_t)image[i]->at(stride + j) / 255.0;
     }
   }
 };
 
-template <typename T> void Model::set_data(CgVariablePtr x, vector<T> data) {
+template <typename T> void Model::set_data(CgVariablePtr x, const vector<T>& data) {
   float_t *x_d =
       x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   for (int i = 0; i < data.size(); ++i) {
