@@ -11,8 +11,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install build-essential cmake python python-pip libarchive-dev
           sudo -H pip install pyyaml mako
-          sudo add-apt-repository ppa:maarten-fonville/protobuf
-          sudo apt install protobuf-compiler libprotoc-dev libprotobuf-dev
+          curl -L https://github.com/google/protobuf/archive/v3.1.0.tar.gz -o protobuf-v3.1.0.tar.gz
+          tar xvf protobuf-v3.1.0.tar.gz
+          cd protobuf-3.1.0
+          mkdir build && cd build
+          cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -Dprotobuf_BUILD_TESTS=OFF ../cmake
+          make
+          sudo make install
+          cd ../..
       - name: Download NNabla
         run: |
           wget https://github.com/sony/nnabla/archive/v1.1.0.zip
