@@ -16,7 +16,7 @@ jobs:
       - name: Download NNabla
         run: |
           wget https://github.com/sony/nnabla/archive/v1.1.0.zip
-          unzip nnabla-1.1.0.zip
+          unzip v1.1.0.zip
       - name: Build NNabla
         run: |
           mkdir nnabla-1.1.0/build
