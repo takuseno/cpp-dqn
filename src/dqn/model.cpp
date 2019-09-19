@@ -56,7 +56,8 @@ void Model::build() {
 };
 
 void Model::infer(const array<uint8_t, OBS_SIZE> &obs_t, float *q_values) {
-  vector<array<uint8_t, OBS_SIZE>*> v_obs_t = {(array<uint8_t, OBS_SIZE>*)&obs_t};
+  vector<array<uint8_t, OBS_SIZE> *> v_obs_t = {
+      (array<uint8_t, OBS_SIZE> *)&obs_t};
   set_image(obs_t_, v_obs_t);
   q_values_->forward(true, true);
   float_t *q_values_d =
@@ -106,7 +107,8 @@ CgVariablePtr Model::q_network(CgVariablePtr obss_t,
   return h;
 };
 
-void Model::set_image(CgVariablePtr x, const vector<array<uint8_t, OBS_SIZE>*>& image) {
+void Model::set_image(CgVariablePtr x,
+                      const vector<array<uint8_t, OBS_SIZE> *> &image) {
   float_t *x_d =
       x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   const int stride = x->variable()->strides()[0];
@@ -117,7 +119,8 @@ void Model::set_image(CgVariablePtr x, const vector<array<uint8_t, OBS_SIZE>*>& 
   }
 };
 
-template <typename T> void Model::set_data(CgVariablePtr x, const vector<T>& data) {
+template <typename T>
+void Model::set_data(CgVariablePtr x, const vector<T> &data) {
   float_t *x_d =
       x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   for (int i = 0; i < data.size(); ++i) {

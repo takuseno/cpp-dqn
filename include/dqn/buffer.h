@@ -1,22 +1,22 @@
 #pragma once
 
-#include <deque>
-#include <random>
-#include <memory>
 #include <array>
+#include <deque>
+#include <dqn/constants.h>
+#include <memory>
+#include <random>
 #include <string.h>
 #include <vector>
-#include <dqn/constants.h>
 
 using namespace std;
 
 namespace dqn {
 
 struct Batch {
-  vector<array<uint8_t, OBS_SIZE>*> obss_t;
+  vector<array<uint8_t, OBS_SIZE> *> obss_t;
   vector<uint8_t> acts_t;
   vector<float> rews_tp1;
-  vector<array<uint8_t, OBS_SIZE>*> obss_tp1;
+  vector<array<uint8_t, OBS_SIZE> *> obss_tp1;
   vector<float> ters_tp1;
 };
 

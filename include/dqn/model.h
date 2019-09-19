@@ -1,11 +1,11 @@
 #pragma once
 
 #include <dqn/buffer.h>
+#include <dqn/constants.h>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/functions.hpp>
 #include <nbla/parametric_functions.hpp>
 #include <nbla/solver/rmsprop.hpp>
-#include <dqn/constants.h>
 
 using namespace std;
 using namespace nbla;
@@ -35,8 +35,9 @@ private:
 
   void build();
   CgVariablePtr q_network(CgVariablePtr obss_t, ParameterDirectory params);
-  void set_image(CgVariablePtr x, const vector<array<uint8_t, OBS_SIZE>*>& image);
-  template <typename T> void set_data(CgVariablePtr x, const vector<T>& data);
+  void set_image(CgVariablePtr x,
+                 const vector<array<uint8_t, OBS_SIZE> *> &image);
+  template <typename T> void set_data(CgVariablePtr x, const vector<T> &data);
 };
 
 }; // namespace dqn
