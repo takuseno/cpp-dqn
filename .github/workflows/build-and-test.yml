@@ -42,4 +42,4 @@ jobs:
           cd ../
 
       - name: Test
-        run: ./tests/dqntest
+        run: ./build/tests/dqntest
