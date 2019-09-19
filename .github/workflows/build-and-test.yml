@@ -28,17 +28,14 @@ jobs:
           mkdir nnabla-1.1.0/build
           cd nnabla-1.1.0/build
           cmake .. -DBUILD_CPP_UTILS=ON -DBUILD_PYTHON_PACKAGE=OFF -DNNABLA_UTILS_WITH_HDF5=OFF
-          make
+          make -j 4
           sudo make install
           cd ../..
 
       - name: Build cpp-dqn
         run: |
-          mkdir build
-          cd build
-          cmake .. -DUSE_SDL=OFF
+          cmake -DUSE_SDL=OFF
           make
-          cd ..
 
       - name: Test
-        run: ./build/tests/dqntest
+        run: ./tests/dqntest
