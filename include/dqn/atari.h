@@ -19,7 +19,7 @@ public:
   ~Atari();
   void step(uint8_t act, uint8_t *obs, float *rew, float *ter);
   void reset(uint8_t *obs);
-  int get_action_size();
+  int get_action_size() { return legal_actions_.size(); }
 
 private:
   shared_ptr<ALEInterface> ale_;

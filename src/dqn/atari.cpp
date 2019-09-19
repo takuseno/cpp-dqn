@@ -52,8 +52,6 @@ void Atari::copy_screen_to_obs(uint8_t *obs) {
   }
 }
 
-int Atari::get_action_size() { return legal_actions_.size(); }
-
 void Atari::reset_data() {
   t_in_episode_ = 0;
   sum_of_rewards_ = 0.0;
