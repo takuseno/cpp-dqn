@@ -1,7 +1,6 @@
 #pragma once
 
 #include <dqn/buffer.h>
-#include <dqn/constants.h>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/functions.hpp>
 #include <nbla/parametric_functions.hpp>
@@ -17,7 +16,7 @@ namespace dqn {
 class Model {
 public:
   Model(int num_of_actions, int batch_size, float gamma, float lr, Context ctx);
-  void infer(const array<uint8_t, OBS_SIZE> &obs_t, float *q_values);
+  void infer(const vector<uint8_t> &obs_t, float *q_values);
   float train(BatchPtr batch);
   void sync_target();
 
@@ -35,8 +34,7 @@ private:
 
   void build();
   CgVariablePtr q_network(CgVariablePtr obss_t, ParameterDirectory params);
-  void set_image(CgVariablePtr x,
-                 const vector<array<uint8_t, OBS_SIZE> *> &image);
+  void set_image(CgVariablePtr x, const vector<vector<uint8_t> *> &image);
   template <typename T> void set_data(CgVariablePtr x, const vector<T> &data);
 };
 

@@ -55,9 +55,8 @@ void Model::build() {
   solver_->set_parameters(params_.get_parameters());
 };
 
-void Model::infer(const array<uint8_t, OBS_SIZE> &obs_t, float *q_values) {
-  vector<array<uint8_t, OBS_SIZE> *> v_obs_t = {
-      (array<uint8_t, OBS_SIZE> *)&obs_t};
+void Model::infer(const vector<uint8_t> &obs_t, float *q_values) {
+  vector<vector<uint8_t> *> v_obs_t = {(vector<uint8_t> *)&obs_t};
   set_image(obs_t_, v_obs_t);
   q_values_->forward(true, true);
   float_t *q_values_d =
@@ -107,8 +106,7 @@ CgVariablePtr Model::q_network(CgVariablePtr obss_t,
   return h;
 };
 
-void Model::set_image(CgVariablePtr x,
-                      const vector<array<uint8_t, OBS_SIZE> *> &image) {
+void Model::set_image(CgVariablePtr x, const vector<vector<uint8_t> *> &image) {
   float_t *x_d =
       x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
   const int stride = x->variable()->strides()[0];

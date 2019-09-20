@@ -16,13 +16,13 @@ Buffer::Buffer(int capacity, mt19937 mt) {
   mt_ = mt;
 }
 
-void Buffer::add(const array<uint8_t, OBS_SIZE> &obs_t, uint8_t act_t,
-                 float rew_tp1, const array<uint8_t, OBS_SIZE> &obs_tp1,
-                 float ter_tp1) {
+void Buffer::add(const vector<uint8_t> &obs_t, uint8_t act_t, float rew_tp1,
+                 const vector<uint8_t> &obs_tp1, float ter_tp1) {
   auto transition = make_shared<Transition>();
-  memcpy(transition->obs_t.data(), obs_t.data(), sizeof(uint8_t) * OBS_SIZE);
-  memcpy(transition->obs_tp1.data(), obs_tp1.data(),
-         sizeof(uint8_t) * OBS_SIZE);
+  transition->obs_t.reserve(obs_t.size());
+  transition->obs_tp1.reserve(obs_tp1.size());
+  memcpy(transition->obs_t.data(), obs_t.data(), obs_t.size());
+  memcpy(transition->obs_tp1.data(), obs_tp1.data(), obs_tp1.size());
   transition->act_t = act_t;
   transition->rew_tp1 = rew_tp1;
   transition->ter_tp1 = ter_tp1;

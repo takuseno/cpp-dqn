@@ -2,7 +2,6 @@
 
 #include <array>
 #include <deque>
-#include <dqn/constants.h>
 #include <memory>
 #include <random>
 #include <string.h>
@@ -13,20 +12,20 @@ using namespace std;
 namespace dqn {
 
 struct Batch {
-  vector<array<uint8_t, OBS_SIZE> *> obss_t;
+  vector<vector<uint8_t> *> obss_t;
   vector<uint8_t> acts_t;
   vector<float> rews_tp1;
-  vector<array<uint8_t, OBS_SIZE> *> obss_tp1;
+  vector<vector<uint8_t> *> obss_tp1;
   vector<float> ters_tp1;
 };
 
 using BatchPtr = shared_ptr<Batch>;
 
 struct Transition {
-  array<uint8_t, OBS_SIZE> obs_t;
+  vector<uint8_t> obs_t;
   uint8_t act_t;
   float rew_tp1;
-  array<uint8_t, OBS_SIZE> obs_tp1;
+  vector<uint8_t> obs_tp1;
   float ter_tp1;
 };
 
@@ -36,8 +35,8 @@ class Buffer {
 public:
   Buffer(int capacity);
   Buffer(int capacity, mt19937 mt);
-  void add(const array<uint8_t, OBS_SIZE> &obs_t, uint8_t act_t, float rew_tp1,
-           const array<uint8_t, OBS_SIZE> &obs_tp1, float ter_tp1);
+  void add(const vector<uint8_t> &obs_t, uint8_t act_t, float rew_tp1,
+           const vector<uint8_t> &obs_tp1, float ter_tp1);
   BatchPtr sample(int batch_size);
   int size() { return size_; };
 
