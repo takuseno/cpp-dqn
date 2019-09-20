@@ -34,15 +34,15 @@ using TransitionPtr = shared_ptr<Transition>;
 class Buffer {
 public:
   Buffer(int capacity);
-  Buffer(int capacity, mt19937 mt);
+  Buffer(int capacity, default_random_engine rengine);
   void add(const vector<uint8_t> &obs_t, uint8_t act_t, float rew_tp1,
            const vector<uint8_t> &obs_tp1, float ter_tp1);
   BatchPtr sample(int batch_size);
   int size() { return size_; };
 
 private:
-  int capacity_, size_;
-  mt19937 mt_;
+  int capacity_, size_, cursor_;
+  default_random_engine rengine_;
   shared_ptr<deque<TransitionPtr>> buffer_;
 };
 
