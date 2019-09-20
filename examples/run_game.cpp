@@ -17,13 +17,13 @@ int main(int argc, char *argv[]) {
   uniform_int_distribution<> dist(0, action_size - 1);
 
   int episode = 0;
-  uint8_t *obs = new uint8_t[RESIZED_IMAGE_SIZE];
+  vector<uint8_t> obs;
   while (episode < 100) {
     float rew = 0.0;
     float ter = 0.0;
-    atari.reset(obs);
+    atari.reset(&obs);
     while (!ter) {
-      atari.step(dist(mt), obs, &rew, &ter);
+      atari.step(dist(mt), &obs, &rew, &ter);
       uint8_t max_pixel = 0;
       for (int i = 0; i < RESIZED_IMAGE_SIZE; ++i) {
         if (obs[i] > max_pixel)
