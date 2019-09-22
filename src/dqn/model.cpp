@@ -25,11 +25,11 @@ void Model::build() {
   ters_tp1_ = make_shared<CgVariable>(Shape_t({batch_size_, 1}), false);
 
   // inference
-  q_values_ = q_network(obs_t_, params_["trainable"]);
+  q_values_ = q_network(obs_t_ / 255.0, params_["trainable"]);
 
   // training
-  auto q_t = q_network(obss_t_, params_["trainable"]);
-  auto q_tp1 = q_network(obss_tp1_, params_["target"]);
+  auto q_t = q_network(obss_t_ / 255.0, params_["trainable"]);
+  auto q_tp1 = q_network(obss_tp1_ / 255.0, params_["target"]);
 
   auto a_one_hot = f::one_hot(acts_t_, {num_of_actions_});
   auto q_t_selected = f::sum(q_t * a_one_hot, {1}, true);
@@ -107,23 +107,18 @@ CgVariablePtr Model::q_network(CgVariablePtr obss_t,
 };
 
 void Model::set_image(CgVariablePtr x, const vector<vector<uint8_t> *> &image) {
-  float_t *x_d =
-      x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
-  const int stride = x->variable()->strides()[0];
+  uint8_t *x_d =
+      x->variable()->cast_data_and_get_pointer<uint8_t>(cpu_ctx_, true);
   for (int i = 0; i < image.size(); ++i) {
-    for (int j = 0; j < stride; ++j) {
-      x_d[i * stride + j] = (float_t)image[i]->at(stride + j) / 255.0;
-    }
+    int offset = i * 4 * 84 * 84;
+    memcpy(x_d + offset, image[i]->data(), image[i]->size());
   }
 };
 
 template <typename T>
 void Model::set_data(CgVariablePtr x, const vector<T> &data) {
-  float_t *x_d =
-      x->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, true);
-  for (int i = 0; i < data.size(); ++i) {
-    x_d[i] = data[i];
-  }
+  T *x_d = x->variable()->cast_data_and_get_pointer<T>(cpu_ctx_, true);
+  memcpy(x_d, data.data(), sizeof(T) * data.size());
 };
 
 }; // namespace dqn

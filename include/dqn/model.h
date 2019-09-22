@@ -19,6 +19,7 @@ public:
   void infer(const vector<uint8_t> &obs_t, float *q_values);
   float train(BatchPtr batch);
   void sync_target();
+  ParameterDirectory parameter_directory() { return params_; };
 
 private:
   int num_of_actions_, batch_size_;
