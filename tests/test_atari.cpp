@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 #include <dqn/atari.h>
 
-
 TEST(AtariTest, Initialize) {
   random_device seed;
   default_random_engine engine(seed());
