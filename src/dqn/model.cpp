@@ -110,7 +110,7 @@ void Model::set_image(CgVariablePtr x, const vector<vector<uint8_t> *> &image) {
   uint8_t *x_d =
       x->variable()->cast_data_and_get_pointer<uint8_t>(cpu_ctx_, true);
   for (int i = 0; i < image.size(); ++i) {
-    int offset = i * 4 * 84 * 84;
+    int offset = i * image[i]->size();
     memcpy(x_d + offset, image[i]->data(), image[i]->size());
   }
 };
