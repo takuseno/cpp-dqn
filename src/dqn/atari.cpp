@@ -108,7 +108,7 @@ void Atari::copy_screens_to_current_obs() {
       int current_pixel = current_screen_.at(target_index);
       int last_pixel = last_screen_.at(target_index);
       uint8_t max_pixel =
-          current_pixel ? current_pixel > last_pixel : last_pixel;
+          current_pixel > last_pixel ? current_pixel : last_pixel;
       current_obs_[index] = max_pixel;
     }
   }
