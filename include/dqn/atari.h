@@ -1,10 +1,10 @@
 #pragma once
 
 #include <ale_interface.hpp>
-#include <array>
-#include <random>
 #include <algorithm>
+#include <array>
 #include <memory>
+#include <random>
 
 using namespace std;
 
@@ -20,7 +20,8 @@ namespace dqn {
 
 class Atari {
 public:
-  Atari(const char *rom, bool gui, bool random_start, default_random_engine rengine);
+  Atari(const char *rom, bool gui, bool episodic_life, bool random_start,
+        default_random_engine rengine);
   ~Atari();
   void step(uint8_t act, vector<uint8_t> *obs, float *rew, float *ter);
   void reset(vector<uint8_t> *obs);
@@ -28,7 +29,6 @@ public:
   array<int, 3> get_observation_size() {
     return {WINDOW_SIZE, RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH};
   }
-  bool game_over();
 
 private:
   shared_ptr<ALEInterface> ale_;
@@ -36,6 +36,9 @@ private:
   int t_in_episode_;
   float sum_of_rewards_;
   bool random_start_;
+  bool episodic_life_;
+  bool was_real_done_;
+  int lives_;
   default_random_engine rengine_;
   vector<uint8_t> current_screen_;
   vector<uint8_t> last_screen_;
@@ -43,6 +46,8 @@ private:
   ActionVect legal_actions_;
 
   void reset_data();
+  void reset_game();
+  bool game_over();
   void get_observation(vector<uint8_t> *obs);
   void update_current_screen();
   void copy_screens_to_current_obs();

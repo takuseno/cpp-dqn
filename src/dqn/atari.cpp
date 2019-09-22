@@ -2,13 +2,17 @@
 
 namespace dqn {
 
-Atari::Atari(const char *rom, bool gui, bool random_start, default_random_engine rengine) {
+Atari::Atari(const char *rom, bool gui, bool episodic_life, bool random_start,
+             default_random_engine rengine) {
   ale_ = make_shared<ALEInterface>(gui);
   ale_->loadROM(rom);
   random_start_ = random_start;
+  episodic_life_ = episodic_life;
   rengine_ = rengine;
   legal_actions_ = ale_->getMinimalActionSet();
 
+  was_real_done_ = true;
+  lives_ = 0;
   t_ = 0;
   reset_data();
 }
@@ -37,8 +41,8 @@ void Atari::step(uint8_t act, vector<uint8_t> *obs, float *rew, float *ter) {
 
 void Atari::reset(vector<uint8_t> *obs) {
   reset_data();
-  ale_->reset_game();
-  
+  reset_game();
+
   update_current_screen();
 
   if (random_start_) {
@@ -50,7 +54,7 @@ void Atari::reset(vector<uint8_t> *obs) {
       update_current_screen();
       if (game_over()) {
         reset_data();
-        ale_->reset_game();
+        reset_game();
         update_current_screen();
       }
     }
@@ -61,9 +65,26 @@ void Atari::reset(vector<uint8_t> *obs) {
   copy_current_obs_to_input(obs);
 }
 
-bool Atari::game_over()
-{
-  return ale_->game_over();
+bool Atari::game_over() {
+  bool ter = ale_->game_over();
+  if (episodic_life_) {
+    int current_lives = ale_->lives();
+    was_real_done_ = ter;
+    if (lives_ > current_lives && current_lives > 0)
+      ter = true;
+    lives_ = current_lives;
+  }
+  return ter;
+}
+
+void Atari::reset_game() {
+  if (episodic_life_) {
+    if (was_real_done_)
+      ale_->reset_game();
+    else
+      ale_->act((Action)0);
+  } else
+    ale_->reset_game();
 }
 
 void Atari::copy_current_obs_to_input(vector<uint8_t> *obs) {
@@ -86,7 +107,8 @@ void Atari::copy_screens_to_current_obs() {
 
       int current_pixel = current_screen_.at(target_index);
       int last_pixel = last_screen_.at(target_index);
-      uint8_t max_pixel = current_pixel ? current_pixel > last_pixel : last_pixel;
+      uint8_t max_pixel =
+          current_pixel ? current_pixel > last_pixel : last_pixel;
       current_obs_[index] = max_pixel;
     }
   }
@@ -96,7 +118,7 @@ void Atari::reset_data() {
   t_in_episode_ = 0;
   sum_of_rewards_ = 0.0;
 
- // fill screens with 0
+  // fill screens with 0
   current_screen_.resize(RAW_IMAGE_SIZE);
   memset(current_screen_.data(), 0, current_screen_.size());
   last_screen_.resize(RAW_IMAGE_SIZE);

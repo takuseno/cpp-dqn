@@ -5,7 +5,7 @@
 TEST(AtariTest, Initialize) {
   random_device seed;
   default_random_engine engine(seed());
-  dqn::Atari atari("atari_roms/breakout.bin", false, true, engine);
+  dqn::Atari atari("atari_roms/breakout.bin", false, true, true, engine);
 
   ASSERT_EQ(atari.get_action_size(), 4);
 
@@ -33,4 +33,36 @@ TEST(AtariTest, Initialize) {
 
   ASSERT_EQ(ter, 1.0);
   ASSERT_NE(rew, -1000.0);
+}
+
+TEST(AtariTest, InitializeWithoutEpisodicLife) {
+  random_device seed;
+  default_random_engine engine(seed());
+  dqn::Atari atari("atari_roms/breakout.bin", false, false, true, engine);
+
+  vector<uint8_t> obs_t;
+  vector<uint8_t> obs_tp1;
+  float rew = -1000.0;
+  float ter = 0.0;
+
+  atari.reset(&obs_t);
+  while (!ter) {
+    atari.step(1, &obs_tp1, &rew, &ter);
+  }
+}
+
+TEST(AtariTest, InitializeWithoutRandomStart) {
+  random_device seed;
+  default_random_engine engine(seed());
+  dqn::Atari atari("atari_roms/breakout.bin", false, false, false, engine);
+
+  vector<uint8_t> obs_t;
+  vector<uint8_t> obs_tp1;
+  float rew = -1000.0;
+  float ter = 0.0;
+
+  atari.reset(&obs_t);
+  while (!ter) {
+    atari.step(1, &obs_tp1, &rew, &ter);
+  }
 }

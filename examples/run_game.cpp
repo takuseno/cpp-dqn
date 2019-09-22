@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
   random_device seed;
   default_random_engine engine(seed());
-  dqn::Atari atari(argv[1], true, true, engine);
+  dqn::Atari atari(argv[1], true, true, true, engine);
 
   int action_size = atari.get_action_size();
 
