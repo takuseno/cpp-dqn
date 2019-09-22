@@ -3,7 +3,9 @@
 
 
 TEST(AtariTest, Initialize) {
-  dqn::Atari atari("atari_roms/breakout.bin", false);
+  random_device seed;
+  default_random_engine engine(seed());
+  dqn::Atari atari("atari_roms/breakout.bin", false, true, engine);
 
   ASSERT_EQ(atari.get_action_size(), 4);
 
@@ -17,8 +19,8 @@ TEST(AtariTest, Initialize) {
     atari.step(1, &obs_tp1, &rew, &ter);
   }
 
-  ASSERT_EQ(obs_t.size(), 84 * 84);
-  ASSERT_EQ(obs_tp1.size(), 84 * 84);
+  ASSERT_EQ(obs_t.size(), 4 * 84 * 84);
+  ASSERT_EQ(obs_tp1.size(), 4 * 84 * 84);
 
   bool is_same = true;
   for (int i = 0; i < RESIZED_IMAGE_SIZE; ++i) {
