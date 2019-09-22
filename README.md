@@ -3,6 +3,21 @@
 # cpp-dqn
 Deep Q-Network implementation written in C++ with NNabla.
 
+This project aims for the :zap: fastest and :smile: readable DQN implementation.
+
+macOS and Linux are currently supported.
+
+## TODO
+- [ ] reproduce [the Nature paper](https://www.nature.com/articles/nature14236).
+- [ ] add more DQN-based algorithms (Double DQN, Prioritized DQN, ...)
+- [ ] use [CULE](https://github.com/NVlabs/cule) for further speed up.
+
+## third party
+- [NNabla](https://github.com/sony/nnabla) (build this by yourself)
+- [Arcade Learning Environment](https://github.com/mgbellemare/Arcade-Learning-Environment)
+- [googletest](https://github.com/google/googletest)
+- [atari-py](https://github.com/openai/atari-py) (only for extracting ROMs)
+
 ## build
 Before building this repository, you need to install NNabla.
 See [official instruction](https://github.com/sony/nnabla/blob/master/doc/build/build_cpp_utils.md).
@@ -30,5 +45,11 @@ $ make
 $ cd build
 $ make
 $ cd ..
-$ ./build/tests/dqntest
+$ ./scripts/test.sh
+```
+
+## format codes
+`clang-format` is used to format entire codes with `llvm` style.
+```
+$ ./scripts/autoformat.sh
 ```
