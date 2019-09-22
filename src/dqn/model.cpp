@@ -11,7 +11,7 @@ Model::Model(int num_of_actions, int batch_size, float gamma, float lr,
   ctx_ = ctx;
   cpu_ctx_ = Context({"cpu:float"}, "CpuCachedArray", "0");
   build();
-};
+}
 
 void Model::build() {
   params_ = ParameterDirectory();
@@ -53,11 +53,11 @@ void Model::build() {
   // setup solver
   solver_ = create_RMSpropSolver(ctx_, lr_, 0.95, 0.01);
   solver_->set_parameters(params_.get_parameters());
-};
+}
 
 void Model::infer(const vector<uint8_t> &obs_t, float *q_values) {
   vector<vector<uint8_t> *> v_obs_t = {(vector<uint8_t> *)&obs_t};
-  set_image(obs_t_, v_obs_t);
+  set_image(obs_t_, v_obs_t, cpu_ctx_);
   q_values_->forward(true, true);
   float_t *q_values_d =
       q_values_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_,
@@ -66,11 +66,11 @@ void Model::infer(const vector<uint8_t> &obs_t, float *q_values) {
 }
 
 float Model::train(BatchPtr batch) {
-  set_image(obss_t_, batch->obss_t);
-  set_data(acts_t_, batch->acts_t);
-  set_data(rews_tp1_, batch->rews_tp1);
-  set_image(obss_tp1_, batch->obss_tp1);
-  set_data(ters_tp1_, batch->ters_tp1);
+  set_image(obss_t_, batch->obss_t, cpu_ctx_);
+  set_data(acts_t_, batch->acts_t, cpu_ctx_);
+  set_data(rews_tp1_, batch->rews_tp1, cpu_ctx_);
+  set_image(obss_tp1_, batch->obss_tp1, cpu_ctx_);
+  set_data(ters_tp1_, batch->ters_tp1, cpu_ctx_);
 
   solver_->zero_grad();
   loss_->forward(false, true);
@@ -81,13 +81,13 @@ float Model::train(BatchPtr batch) {
   float_t *loss_d =
       loss_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, false);
   return loss_d[0];
-};
+}
 
 void Model::sync_target() {
   for (int i = 0; i < assigns_.size(); ++i) {
     assigns_[i]->forward(true, true);
   }
-};
+}
 
 CgVariablePtr Model::q_network(CgVariablePtr obss_t,
                                ParameterDirectory params) {
@@ -104,21 +104,6 @@ CgVariablePtr Model::q_network(CgVariablePtr obss_t,
   h = f::relu(h, true);
   h = pf::affine(h, 1, num_of_actions_, params["fc2"]);
   return h;
-};
-
-void Model::set_image(CgVariablePtr x, const vector<vector<uint8_t> *> &image) {
-  uint8_t *x_d =
-      x->variable()->cast_data_and_get_pointer<uint8_t>(cpu_ctx_, true);
-  for (int i = 0; i < image.size(); ++i) {
-    int offset = i * image[i]->size();
-    memcpy(x_d + offset, image[i]->data(), image[i]->size());
-  }
-};
-
-template <typename T>
-void Model::set_data(CgVariablePtr x, const vector<T> &data) {
-  T *x_d = x->variable()->cast_data_and_get_pointer<T>(cpu_ctx_, true);
-  memcpy(x_d, data.data(), sizeof(T) * data.size());
-};
+}
 
 }; // namespace dqn

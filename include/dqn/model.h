@@ -1,6 +1,7 @@
 #pragma once
 
 #include <dqn/buffer.h>
+#include <dqn/nnabla_utils.h>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/functions.hpp>
 #include <nbla/parametric_functions.hpp>
@@ -35,8 +36,6 @@ private:
 
   void build();
   CgVariablePtr q_network(CgVariablePtr obss_t, ParameterDirectory params);
-  void set_image(CgVariablePtr x, const vector<vector<uint8_t> *> &image);
-  template <typename T> void set_data(CgVariablePtr x, const vector<T> &data);
 };
 
 }; // namespace dqn

@@ -1,3 +1,4 @@
+#include "dqn_test_utils.h"
 #include "gtest/gtest.h"
 #include <dqn/model.h>
 #include <nbla/computation_graph/computation_graph.hpp>
@@ -12,14 +13,6 @@ bool check_same(CgVariablePtr x, CgVariablePtr y, nbla::Context ctx) {
     if (x_d[i] != y_d[i])
       return false;
   return true;
-}
-
-void fill_vector(vector<uint8_t> *v) {
-  random_device seed_gen;
-  default_random_engine engine(seed_gen());
-  uniform_int_distribution<> dist(0, 255);
-  for (int i = 0; i < v->size(); ++i)
-    (*v)[i] = dist(engine);
 }
 
 TEST(ModelTest, ConstructGraph) {
