@@ -21,6 +21,7 @@ public:
   float train(BatchPtr batch);
   void sync_target();
   ParameterDirectory parameter_directory() { return params_; };
+  int batch_size() { return batch_size_; }
 
 private:
   int num_of_actions_, batch_size_;
