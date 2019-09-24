@@ -35,8 +35,13 @@ void Model::build() {
   auto q_t_selected = f::sum(q_t * a_one_hot, {1}, true);
   auto q_tp1_best = f::max(q_tp1, {1}, true, false, false);
 
+  // reward clipping
+  auto clipped_rews_tp1 =
+      f::minimum2(f::minimum2(rews_tp1_, f::constant(-1.0, {batch_size_, 1})),
+                  f::constant(1.0, {batch_size_, 1}));
+
   // target value
-  auto y = rews_tp1_ + gamma_ * q_tp1_best * (1.0 - ters_tp1_);
+  auto y = clipped_rews_tp1 + gamma_ * q_tp1_best * (1.0 - ters_tp1_);
   // loss
   loss_ = f::mean(f::huber_loss(q_t_selected, y, 1.0), {}, false);
 
