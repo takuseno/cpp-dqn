@@ -3,14 +3,16 @@
 namespace dqn {
 
 Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<Model> model,
-                 shared_ptr<Buffer> buffer, shared_ptr<EpsilonGreedy> exploration,
-                 int update_start,
+                 shared_ptr<Buffer> buffer,
+                 shared_ptr<EpsilonGreedy> exploration,
+                 shared_ptr<Monitor> monitor, int update_start,
                  int update_interval, int target_update_interval,
                  int final_step) {
   atari_ = atari;
   model_ = model;
   buffer_ = buffer;
   exploration_ = exploration;
+  monitor_ = monitor;
 
   update_start_ = update_start;
   update_interval_ = update_interval;
@@ -21,6 +23,10 @@ Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<Model> model,
 }
 
 void Trainer::start() {
+  // Setup Monitors
+  MonitorSeries reward_monitor(monitor_, "reward", 100);
+  MonitorSeries loss_monitor(monitor_, "loss", 10000);
+
   int observation_size = 1;
   auto observation_shape = atari_->get_observation_size();
   for (int i = 0; i < observation_shape.size(); ++i)
@@ -44,8 +50,10 @@ void Trainer::start() {
       atari_->step(act_tm1, &obs_t, &rew_t, &ter_t);
 
       buffer_->add(obs_tm1, act_tm1, rew_t, obs_t, ter_t);
-      if (t_ > update_start_ && t_ % update_interval_ == 0)
-        update();
+      if (t_ > update_start_ && t_ % update_interval_ == 0) {
+        float loss = update();
+        loss_monitor.add(t_, loss);
+      }
 
       if (t_ % target_update_interval_ == 0)
         model_->sync_target();
@@ -53,14 +61,15 @@ void Trainer::start() {
       if (t_ >= final_step_)
         break;
     }
+    reward_monitor.add(t_, atari_->episode_reward());
   }
 
   delete[] q_values;
 }
 
-void Trainer::update() {
+float Trainer::update() {
   BatchPtr batch = buffer_->sample(model_->batch_size());
-  float loss = model_->train(batch);
+  return model_->train(batch);
 }
 
 }; // namespace dqn

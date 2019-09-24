@@ -2,8 +2,9 @@
 
 #include <dqn/atari.h>
 #include <dqn/buffer.h>
-#include <dqn/model.h>
 #include <dqn/exploration.h>
+#include <dqn/model.h>
+#include <dqn/monitor.h>
 #include <memory>
 
 using namespace std;
@@ -14,7 +15,7 @@ class Trainer {
 public:
   Trainer(shared_ptr<Atari> atari, shared_ptr<Model> model,
           shared_ptr<Buffer> buffer, shared_ptr<EpsilonGreedy> exploration,
-          int update_start, int update_interval,
+          shared_ptr<Monitor> monitor, int update_start, int update_interval,
           int target_update_interval, int final_step);
   void start();
 
@@ -25,8 +26,9 @@ private:
   shared_ptr<Buffer> buffer_;
   shared_ptr<Model> model_;
   shared_ptr<EpsilonGreedy> exploration_;
+  shared_ptr<Monitor> monitor_;
 
-  void update();
+  float update();
 };
 
 }; // namespace dqn
