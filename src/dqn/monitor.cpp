@@ -2,29 +2,48 @@
 
 namespace dqn {
 
-Monitor::Monitor(const string& logdir) {
+Monitor::Monitor(const string &logdir) {
   logdir_ = logdir;
+  prepare_directory();
 }
 
-void Monitor::add(const string& name) {
-  FILE* fp = fopen((logdir_ + "/" + name).c_str(), "wt");
+void Monitor::add(const string &name) {
+  string base_path = LOG_BASE_DIR;
+  string path = base_path + "/" + logdir_ + "/" + name + ".series.txt";
+  FILE *fp;
+  if ((fp = fopen(path.c_str(), "wt")) == NULL) {
+    fprintf(stderr, "failed to create %s\n", path.c_str());
+    exit(1);
+  }
   fps_[name] = fp;
 }
 
-void Monitor::close(const string& name) {
-  fclose(fps_[name]);
-}
+void Monitor::close(const string &name) { fclose(fps_[name]); }
 
-void Monitor::print(const string& name, int t, float value) {
+void Monitor::print(const string &name, int t, float value) {
   fprintf(fps_[name], "%d %f\n", t, value);
 }
 
-MonitorSeries::MonitorSeries(shared_ptr<Monitor> monitor, const string& name, int interval) {
+void Monitor::prepare_directory() {
+  string base_path = LOG_BASE_DIR;
+  string path = base_path + "/" + logdir_;
+  if (mkdir(path.c_str(), 0755)) {
+    fprintf(stderr, "failed to create directory at %s\n", path.c_str());
+    exit(1);
+  }
+}
+
+MonitorSeries::MonitorSeries(shared_ptr<Monitor> monitor, const string &name,
+                             int interval) {
   monitor_ = monitor;
   name_ = name;
   interval_ = interval;
   history_.resize(interval);
   count_ = 0;
+
+  if (monitor != nullptr) {
+    monitor_->add(name_);
+  }
 }
 
 void MonitorSeries::add(int t, float value) {
@@ -44,4 +63,4 @@ void MonitorSeries::add(int t, float value) {
   monitor_->print(name_, t, mean);
 }
 
-};
+}; // namespace dqn

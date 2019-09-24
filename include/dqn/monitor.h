@@ -1,11 +1,15 @@
 #pragma once
 
-#include <stdio.h>
-#include <vector>
-#include <unordered_map>
 #include <memory>
-#include <string>
 #include <numeric>
+#include <stdio.h>
+#include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unordered_map>
+#include <vector>
+
+#define LOG_BASE_DIR "logs"
 
 using namespace std;
 
@@ -13,20 +17,20 @@ namespace dqn {
 
 class Monitor {
 public:
-  Monitor(const string& logdir);
-  void print(const string& name, int t, float value);
-  void add(const string& name);
-  void close(const string& name);
+  Monitor(const string &logdir);
+  void print(const string &name, int t, float value);
+  void add(const string &name);
+  void close(const string &name);
 
 private:
   void prepare_directory();
-  unordered_map<string, FILE*> fps_;
+  unordered_map<string, FILE *> fps_;
   string logdir_;
 };
 
 class MonitorSeries {
 public:
-  MonitorSeries(shared_ptr<Monitor> monitor, const string& name, int interval);
+  MonitorSeries(shared_ptr<Monitor> monitor, const string &name, int interval);
   ~MonitorSeries() { monitor_->close(name_); };
   void add(int t, float value);
 
@@ -38,4 +42,4 @@ private:
   vector<float> history_;
 };
 
-};
+}; // namespace dqn
