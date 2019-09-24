@@ -29,12 +29,13 @@ public:
   array<int, 3> get_observation_size() {
     return {WINDOW_SIZE, RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH};
   }
+  float episode_reward() { return episode_reward_; };
 
 private:
   shared_ptr<ALEInterface> ale_;
   int t_;
   int t_in_episode_;
-  float sum_of_rewards_;
+  float episode_reward_;
   bool random_start_;
   bool episodic_life_;
   bool was_real_done_;

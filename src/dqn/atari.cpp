@@ -34,7 +34,7 @@ void Atari::step(uint8_t act, vector<uint8_t> *obs, float *rew, float *ter) {
   copy_screens_to_current_obs();
   copy_current_obs_to_input(obs);
 
-  sum_of_rewards_ += *rew;
+  episode_reward_ += *rew;
   ++t_;
   ++t_in_episode_;
 }
@@ -116,7 +116,7 @@ void Atari::copy_screens_to_current_obs() {
 
 void Atari::reset_data() {
   t_in_episode_ = 0;
-  sum_of_rewards_ = 0.0;
+  episode_reward_ = 0.0;
 
   // fill screens with 0
   current_screen_.resize(RAW_IMAGE_SIZE);
