@@ -26,7 +26,7 @@ uint8_t EpsilonGreedy::sample(float *q_values, int t) {
   std::uniform_real_distribution<> dist(0.0, 1.0);
   // random action
   if (dist(rengine_) < epsilon(t)) {
-    std::uniform_int_distribution<> dist(0, action_size_);
+    std::uniform_int_distribution<> dist(0, action_size_ - 1);
     return dist(rengine_);
   }
 
