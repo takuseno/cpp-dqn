@@ -3,6 +3,7 @@
 #include <deque>
 #include <memory>
 #include <random>
+#include <string.h>
 #include <vector>
 
 using namespace std;
