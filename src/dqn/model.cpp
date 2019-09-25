@@ -36,14 +36,15 @@ void Model::build() {
   auto q_tp1_best = f::max(q_tp1, {1}, true, false, false);
 
   // reward clipping
-  auto clipped_rews_tp1 =
-      f::minimum2(f::minimum2(rews_tp1_, f::constant(-1.0, {batch_size_, 1})),
-                  f::constant(1.0, {batch_size_, 1}));
+  auto min = f::constant(-1.0, {batch_size_, 1});
+  auto max = f::constant(1.0, {batch_size_, 1});
+  auto clipped_rews_tp1 = f::minimum2(f::maximum2(rews_tp1_, min), max);
 
   // target value
   auto y = clipped_rews_tp1 + gamma_ * q_tp1_best * (1.0 - ters_tp1_);
+  y->set_need_grad(false);
   // loss
-  loss_ = f::mean(f::huber_loss(q_t_selected, y, 1.0), {}, false);
+  loss_ = f::mean(f::huber_loss(q_t_selected, y, 1.0), {0, 1}, false);
 
   // target update
   auto trainable_params = params_["trainable"].get_parameters();
@@ -64,9 +65,8 @@ void Model::infer(const vector<uint8_t> &obs_t, float *q_values) {
   vector<vector<uint8_t> *> v_obs_t = {(vector<uint8_t> *)&obs_t};
   set_image(obs_t_, v_obs_t, cpu_ctx_);
   q_values_->forward(true, true);
-  float_t *q_values_d =
-      q_values_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_,
-                                                                false);
+  const float_t *q_values_d =
+      q_values_->variable()->get_data_pointer<float_t>(cpu_ctx_);
   memcpy(q_values, q_values_d, sizeof(float) * num_of_actions_);
 }
 
@@ -83,8 +83,8 @@ float Model::train(BatchPtr batch) {
   loss_->backward(nullptr, true);
   solver_->update();
 
-  float_t *loss_d =
-      loss_->variable()->cast_data_and_get_pointer<float_t>(cpu_ctx_, false);
+  const float_t *loss_d =
+      loss_->variable()->get_data_pointer<float_t>(cpu_ctx_);
   return loss_d[0];
 }
 
