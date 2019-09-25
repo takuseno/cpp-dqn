@@ -1,8 +1,8 @@
-#include <dqn/model.h>
+#include <dqn/models/dqn.h>
 
 namespace dqn {
 
-Model::Model(int num_of_actions, int batch_size, float gamma, float lr,
+DQN::DQN(int num_of_actions, int batch_size, float gamma, float lr,
              Context ctx) {
   num_of_actions_ = num_of_actions;
   batch_size_ = batch_size;
@@ -13,7 +13,7 @@ Model::Model(int num_of_actions, int batch_size, float gamma, float lr,
   build();
 }
 
-void Model::build() {
+void DQN::build() {
   params_ = ParameterDirectory();
 
   // entry variables
@@ -61,7 +61,7 @@ void Model::build() {
   solver_->set_parameters(params_.get_parameters());
 }
 
-void Model::infer(const vector<uint8_t> &obs_t, float *q_values) {
+void DQN::infer(const vector<uint8_t> &obs_t, float *q_values) {
   vector<vector<uint8_t> *> v_obs_t = {(vector<uint8_t> *)&obs_t};
   set_image(obs_t_, v_obs_t, cpu_ctx_);
   q_values_->forward(true, true);
@@ -70,7 +70,7 @@ void Model::infer(const vector<uint8_t> &obs_t, float *q_values) {
   memcpy(q_values, q_values_d, sizeof(float) * num_of_actions_);
 }
 
-float Model::train(BatchPtr batch) {
+float DQN::train(BatchPtr batch) {
   set_image(obss_t_, batch->obss_t, cpu_ctx_);
   set_data(acts_t_, batch->acts_t, cpu_ctx_);
   set_data(rews_tp1_, batch->rews_tp1, cpu_ctx_);
@@ -88,25 +88,15 @@ float Model::train(BatchPtr batch) {
   return loss_d[0];
 }
 
-void Model::sync_target() {
+void DQN::sync_target() {
   for (int i = 0; i < assigns_.size(); ++i) {
     assigns_[i]->forward(true, true);
   }
 }
 
-CgVariablePtr Model::q_network(CgVariablePtr obss_t,
+CgVariablePtr DQN::q_network(CgVariablePtr obss_t,
                                ParameterDirectory params) {
-  pf::ConvolutionOpts opts1 = pf::ConvolutionOpts().stride({4, 4});
-  auto h = pf::convolution(obss_t, 1, 32, {8, 8}, params["conv1"], opts1);
-  h = f::relu(h, true);
-  pf::ConvolutionOpts opts2 = pf::ConvolutionOpts().stride({2, 2});
-  h = pf::convolution(h, 1, 64, {4, 4}, params["conv2"], opts2);
-  h = f::relu(h, true);
-  pf::ConvolutionOpts opts3 = pf::ConvolutionOpts().stride({1, 1});
-  h = pf::convolution(h, 1, 64, {3, 3}, params["conv3"], opts3);
-  h = f::relu(h, true);
-  h = pf::affine(h, 1, 512, params["fc1"]);
-  h = f::relu(h, true);
+  auto h = nature_encoder(obss_t, params);
   h = pf::affine(h, 1, num_of_actions_, params["fc2"]);
   return h;
 }

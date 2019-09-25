@@ -1,7 +1,7 @@
 #include <dqn/atari.h>
 #include <dqn/buffer.h>
 #include <dqn/exploration.h>
-#include <dqn/model.h>
+#include <dqn/models/dqn.h>
 #include <dqn/monitor.h>
 #include <dqn/trainer.h>
 #include <random>
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   auto exploration =
       make_shared<EpsilonGreedy>(atari->get_action_size(), 1.0, 0.1, 1000000);
   auto model =
-      make_shared<Model>(atari->get_action_size(), 32, 0.99, 0.00025, ctx);
+      make_shared<DQN>(atari->get_action_size(), 32, 0.99, 0.00025, ctx);
   auto monitor = make_shared<Monitor>(datetime);
 
   Trainer trainer(atari, model, buffer, exploration, monitor, 50000, 4, 10000,

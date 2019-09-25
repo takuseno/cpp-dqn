@@ -1,5 +1,6 @@
 file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  ./*.cpp)
+  ./*.cpp
+  ./models/*.cpp)
 
 add_library(dqn SHARED ${SOURCES})
 

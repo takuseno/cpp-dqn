@@ -2,6 +2,7 @@
 
 #include <dqn/buffer.h>
 #include <dqn/nnabla_utils.h>
+#include <dqn/encoder.h>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/functions.hpp>
 #include <nbla/parametric_functions.hpp>
@@ -14,9 +15,9 @@ namespace pf = nbla::parametric_functions;
 
 namespace dqn {
 
-class Model {
+class DQN {
 public:
-  Model(int num_of_actions, int batch_size, float gamma, float lr, Context ctx);
+  DQN(int num_of_actions, int batch_size, float gamma, float lr, Context ctx);
   void infer(const vector<uint8_t> &obs_t, float *q_values);
   float train(BatchPtr batch);
   void sync_target();

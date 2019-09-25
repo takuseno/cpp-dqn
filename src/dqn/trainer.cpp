@@ -2,7 +2,7 @@
 
 namespace dqn {
 
-Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<Model> model,
+Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<DQN> model,
                  shared_ptr<Buffer> buffer,
                  shared_ptr<EpsilonGreedy> exploration,
                  shared_ptr<Monitor> monitor, int update_start,
