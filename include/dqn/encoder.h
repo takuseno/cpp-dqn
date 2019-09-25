@@ -10,7 +10,8 @@ namespace pf = nbla::parametric_functions;
 
 namespace dqn {
 
-inline CgVariablePtr nature_encoder(CgVariablePtr x, ParameterDirectory params) {
+inline CgVariablePtr nature_encoder(CgVariablePtr x,
+                                    ParameterDirectory params) {
   pf::ConvolutionOpts opts1 = pf::ConvolutionOpts().stride({4, 4});
   auto h = pf::convolution(x, 1, 32, {8, 8}, params["conv1"], opts1);
   h = f::relu(h, true);
@@ -25,4 +26,4 @@ inline CgVariablePtr nature_encoder(CgVariablePtr x, ParameterDirectory params) 
   return h;
 }
 
-};
+}; // namespace dqn
