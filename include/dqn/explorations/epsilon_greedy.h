@@ -13,7 +13,7 @@ public:
 
 private:
   uint8_t action_size_;
-  int epsilon_;
+  float epsilon_;
   default_random_engine rengine_;
 };
 
