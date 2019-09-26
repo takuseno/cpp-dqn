@@ -3,15 +3,16 @@
 namespace dqn {
 
 Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<DQN> model,
-                 shared_ptr<Buffer> buffer,
-                 shared_ptr<EpsilonGreedy> exploration,
-                 shared_ptr<Monitor> monitor, int update_start,
-                 int update_interval, int target_update_interval,
-                 int final_step, int log_interval) {
+                 shared_ptr<Buffer> buffer, shared_ptr<Exploration> exploration,
+                 shared_ptr<Evaluator> evaluator, shared_ptr<Monitor> monitor,
+                 int update_start, int update_interval,
+                 int target_update_interval, int final_step, int log_interval,
+                 int eval_interval) {
   atari_ = atari;
   model_ = model;
   buffer_ = buffer;
   exploration_ = exploration;
+  evaluator_ = evaluator;
   monitor_ = monitor;
 
   update_start_ = update_start;
@@ -19,6 +20,7 @@ Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<DQN> model,
   target_update_interval_ = target_update_interval;
   final_step_ = final_step;
   log_interval_ = log_interval;
+  eval_interval_ = eval_interval;
 
   t_ = 0;
 }
@@ -45,7 +47,7 @@ void Trainer::start() {
       ++t_;
 
       model_->infer(obs_t, q_values);
-      uint8_t act_tm1 = exploration_->sample(q_values, t_ - 1);
+      uint8_t act_tm1 = exploration_->sample(q_values, t_);
 
       memcpy(obs_tm1.data(), obs_t.data(), observation_size);
       atari_->step(act_tm1, &obs_t, &rew_t, &ter_t);
@@ -63,6 +65,9 @@ void Trainer::start() {
         reward_monitor.emit(t_);
         loss_monitor.emit(t_);
       }
+
+      if (t_ % eval_interval_ == 0)
+        evaluator_->start(t_);
 
       if (t_ >= final_step_)
         break;
