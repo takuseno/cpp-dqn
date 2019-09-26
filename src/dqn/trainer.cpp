@@ -7,7 +7,7 @@ Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<DQN> model,
                  shared_ptr<EpsilonGreedy> exploration,
                  shared_ptr<Monitor> monitor, int update_start,
                  int update_interval, int target_update_interval,
-                 int final_step) {
+                 int final_step, int log_interval) {
   atari_ = atari;
   model_ = model;
   buffer_ = buffer;
@@ -18,6 +18,7 @@ Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<DQN> model,
   update_interval_ = update_interval;
   target_update_interval_ = target_update_interval;
   final_step_ = final_step;
+  log_interval_ = log_interval;
 
   t_ = 0;
 }
@@ -52,16 +53,21 @@ void Trainer::start() {
       buffer_->add(obs_tm1, act_tm1, rew_t, obs_t, ter_t);
       if (t_ > update_start_ && t_ % update_interval_ == 0) {
         float loss = update();
-        loss_monitor.add(t_, loss);
+        loss_monitor.add(loss);
       }
 
       if (t_ % target_update_interval_ == 0)
         model_->sync_target();
 
+      if (t_ % log_interval_ == 0) {
+        reward_monitor.emit(t_);
+        loss_monitor.emit(t_);
+      }
+
       if (t_ >= final_step_)
         break;
     }
-    reward_monitor.add(t_, atari_->episode_reward());
+    reward_monitor.add(atari_->episode_reward());
   }
 
   delete[] q_values;

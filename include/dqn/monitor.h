@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <numeric>
+#include <sstream>
 #include <stdio.h>
 #include <string>
 #include <sys/stat.h>
@@ -19,6 +20,7 @@ class Monitor {
 public:
   Monitor(const string &logdir);
   void print(const string &name, int t, float value);
+  void print(const string &name, int t, const vector<float> &values);
   void add(const string &name);
   void close(const string &name);
 
@@ -30,15 +32,31 @@ private:
 
 class MonitorSeries {
 public:
-  MonitorSeries(shared_ptr<Monitor> monitor, const string &name, int interval);
+  MonitorSeries(shared_ptr<Monitor> monitor, const string &name, int window);
   ~MonitorSeries() { monitor_->close(name_); };
-  void add(int t, float value);
+  void add(float value);
+  void emit(int t);
 
 private:
   shared_ptr<Monitor> monitor_;
   string name_;
-  int interval_;
+  int window_;
   int count_;
+  vector<float> history_;
+};
+
+class MonitorMultiColumnSeries {
+public:
+  MonitorMultiColumnSeries(shared_ptr<Monitor> monitor, const string &name,
+                           int num_columns);
+  ~MonitorMultiColumnSeries() { monitor_->close(name_); };
+  void add(float value);
+  void emit(int t);
+
+private:
+  shared_ptr<Monitor> monitor_;
+  string name_;
+  int num_columns_, cursor_;
   vector<float> history_;
 };
 

@@ -9,7 +9,7 @@ Monitor::Monitor(const string &logdir) {
 
 void Monitor::add(const string &name) {
   string base_path = LOG_BASE_DIR;
-  string path = base_path + "/" + logdir_ + "/" + name + ".series.txt";
+  string path = base_path + "/" + logdir_ + "/" + name + ".csv";
   FILE *fp;
   if ((fp = fopen(path.c_str(), "wt")) == NULL) {
     fprintf(stderr, "failed to create %s\n", path.c_str());
@@ -21,7 +21,17 @@ void Monitor::add(const string &name) {
 void Monitor::close(const string &name) { fclose(fps_[name]); }
 
 void Monitor::print(const string &name, int t, float value) {
-  fprintf(fps_[name], "%d %f\n", t, value);
+  fprintf(fps_[name], "%d,%f\n", t, value);
+  fflush(fps_[name]);
+}
+
+void Monitor::print(const string &name, int t, const vector<float> &values) {
+  ostringstream ss;
+  ss << t;
+  for (int i = 0; i < values.size(); ++i)
+    ss << "," << values[i];
+  fprintf(fps_[name], "%s\n", ss.str().c_str());
+  fflush(fps_[name]);
 }
 
 void Monitor::prepare_directory() {
@@ -34,11 +44,11 @@ void Monitor::prepare_directory() {
 }
 
 MonitorSeries::MonitorSeries(shared_ptr<Monitor> monitor, const string &name,
-                             int interval) {
+                             int window) {
   monitor_ = monitor;
   name_ = name;
-  interval_ = interval;
-  history_.resize(interval);
+  window_ = window;
+  history_.resize(window, 0);
   count_ = 0;
 
   if (monitor != nullptr) {
@@ -46,21 +56,57 @@ MonitorSeries::MonitorSeries(shared_ptr<Monitor> monitor, const string &name,
   }
 }
 
-void MonitorSeries::add(int t, float value) {
-  history_[count_ % interval_] = value;
+void MonitorSeries::add(float value) {
+  history_[count_ % window_] = value;
   ++count_;
+}
 
-  if (count_ % interval_ != 0)
+void MonitorSeries::emit(int t) {
+  if (count_ == 0)
     return;
 
   float sum = accumulate(begin(history_), end(history_), 0.0);
-  float mean = sum / interval_;
+  int n = count_ > window_ ? window_ : count_;
+  float mean = sum / n;
 
   fprintf(stdout, "[%s] step: %d, value %f\n", name_.c_str(), t, mean);
 
   if (monitor_ == nullptr)
     return;
   monitor_->print(name_, t, mean);
+}
+
+MonitorMultiColumnSeries::MonitorMultiColumnSeries(shared_ptr<Monitor> monitor,
+                                                   const string &name,
+                                                   int num_columns) {
+  monitor_ = monitor;
+  name_ = name;
+  num_columns_ = num_columns;
+  history_.reserve(num_columns);
+  cursor_ = 0;
+
+  if (monitor != nullptr)
+    monitor_->add(name_);
+}
+
+void MonitorMultiColumnSeries::add(float value) {
+  history_[cursor_] = value;
+  ++cursor_;
+  if (cursor_ == num_columns_)
+    cursor_ = 0;
+}
+
+void MonitorMultiColumnSeries::emit(int t) {
+  float sum = accumulate(begin(history_), end(history_), 0.0);
+  float mean = sum / history_.size();
+
+  fprintf(stdout, "[%s] step: %d, mean value %f\n", name_.c_str(), t, mean);
+
+  if (monitor_ != nullptr)
+    monitor_->print(name_, t, history_);
+
+  history_.clear();
+  cursor_ = 0;
 }
 
 }; // namespace dqn

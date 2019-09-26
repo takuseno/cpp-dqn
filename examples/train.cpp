@@ -38,6 +38,6 @@ int main(int argc, char *argv[]) {
   auto monitor = make_shared<Monitor>(datetime);
 
   Trainer trainer(atari, model, buffer, exploration, monitor, 50000, 4, 10000,
-                  10000000);
+                  10000000, 10000);
   trainer.start();
 }

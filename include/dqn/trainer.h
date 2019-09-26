@@ -16,12 +16,13 @@ public:
   Trainer(shared_ptr<Atari> atari, shared_ptr<DQN> model,
           shared_ptr<Buffer> buffer, shared_ptr<EpsilonGreedy> exploration,
           shared_ptr<Monitor> monitor, int update_start, int update_interval,
-          int target_update_interval, int final_step);
+          int target_update_interval, int final_step, int log_interval);
   void start();
 
 private:
   int t_;
   int update_start_, update_interval_, target_update_interval_, final_step_;
+  int log_interval_;
   shared_ptr<Atari> atari_;
   shared_ptr<Buffer> buffer_;
   shared_ptr<DQN> model_;
