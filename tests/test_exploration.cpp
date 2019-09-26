@@ -1,8 +1,11 @@
 #include "gtest/gtest.h"
-#include <dqn/exploration.h>
+#include <dqn/explorations/epsilon_greedy.h>
 
-TEST(ExplorationTest, EpsilonGreedy) {
-  dqn::EpsilonGreedy exploration(4, 1.0, 0.1, 1000);
+TEST(ExplorationTest, LinearDecayEpsilonGreedy) {
+  random_device seed_gen;
+  default_random_engine rengine(seed_gen());
+
+  dqn::LinearDecayEpsilonGreedy exploration(4, 1.0, 0.1, 1000, rengine);
 
   ASSERT_EQ(exploration.epsilon(0), 1.0f);
   ASSERT_EQ(exploration.epsilon(500), 0.55f);
@@ -19,4 +22,14 @@ TEST(ExplorationTest, EpsilonGreedy) {
     }
   }
   ASSERT_EQ(is_random, true);
+}
+
+TEST(ExplorationTest, ConstantEpsilonGreedy) {
+  random_device seed_gen;
+  default_random_engine rengine(seed_gen());
+
+  dqn::ConstantEpsilonGreedy exploration(4, 0.5, rengine);
+
+  ASSERT_EQ(exploration.epsilon(0), 0.5f);
+  ASSERT_EQ(exploration.epsilon(1000), 0.5f);
 }
