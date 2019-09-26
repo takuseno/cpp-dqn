@@ -82,7 +82,7 @@ MonitorMultiColumnSeries::MonitorMultiColumnSeries(shared_ptr<Monitor> monitor,
   monitor_ = monitor;
   name_ = name;
   num_columns_ = num_columns;
-  history_.reserve(num_columns);
+  history_.resize(num_columns, 0.0);
   cursor_ = 0;
 
   if (monitor != nullptr)
@@ -105,7 +105,6 @@ void MonitorMultiColumnSeries::emit(int t) {
   if (monitor_ != nullptr)
     monitor_->print(name_, t, history_);
 
-  history_.clear();
   cursor_ = 0;
 }
 
