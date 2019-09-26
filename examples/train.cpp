@@ -1,6 +1,7 @@
 #include <dqn/atari.h>
 #include <dqn/buffer.h>
-#include <dqn/exploration.h>
+#include <dqn/evaluator.h>
+#include <dqn/explorations/epsilon_greedy.h>
 #include <dqn/models/dqn.h>
 #include <dqn/monitor.h>
 #include <dqn/trainer.h>
@@ -30,14 +31,24 @@ int main(int argc, char *argv[]) {
   auto ctx = Context({"cpu:float"}, "CpuCachedArray", "0");
 
   auto atari = make_shared<Atari>(argv[1], false, true, true, rengine);
+  auto eval_atari = make_shared<Atari>(argv[1], false, false, true, rengine);
+
   auto buffer = make_shared<Buffer>(100000);
-  auto exploration =
-      make_shared<EpsilonGreedy>(atari->get_action_size(), 1.0, 0.1, 1000000);
+
+  auto train_exploration = make_shared<LinearDecayEpsilonGreedy>(
+      atari->get_action_size(), 1.0, 0.1, 1000000, rengine);
+  auto eval_exploration = make_shared<ConstantEpsilonGreedy>(
+      atari->get_action_size(), 0.05, rengine);
+
   auto model =
       make_shared<DQN>(atari->get_action_size(), 32, 0.99, 0.00025, ctx);
+
   auto monitor = make_shared<Monitor>(datetime);
 
-  Trainer trainer(atari, model, buffer, exploration, monitor, 50000, 4, 10000,
-                  10000000, 10000);
+  auto evaluator =
+      make_shared<Evaluator>(eval_atari, model, eval_exploration, monitor, 10);
+
+  Trainer trainer(atari, model, buffer, train_exploration, evaluator, monitor,
+                  50000, 4, 10000, 10000000, 10000, 100000);
   trainer.start();
 }
