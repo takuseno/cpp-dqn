@@ -1,8 +1,8 @@
 #pragma once
 
 #include <dqn/buffer.h>
-#include <dqn/nnabla_utils.h>
 #include <dqn/encoder.h>
+#include <dqn/nnabla_utils.h>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/functions.hpp>
 #include <nbla/parametric_functions.hpp>

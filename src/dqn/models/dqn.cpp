@@ -3,7 +3,7 @@
 namespace dqn {
 
 DQN::DQN(int num_of_actions, int batch_size, float gamma, float lr,
-             Context ctx) {
+         Context ctx) {
   num_of_actions_ = num_of_actions;
   batch_size_ = batch_size;
   gamma_ = gamma;
@@ -94,8 +94,7 @@ void DQN::sync_target() {
   }
 }
 
-CgVariablePtr DQN::q_network(CgVariablePtr obss_t,
-                               ParameterDirectory params) {
+CgVariablePtr DQN::q_network(CgVariablePtr obss_t, ParameterDirectory params) {
   auto h = nature_encoder(obss_t, params);
   h = pf::affine(h, 1, num_of_actions_, params["fc2"]);
   return h;
