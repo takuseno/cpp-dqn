@@ -2,22 +2,14 @@
 
 namespace dqn {
 
-Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<DQN> model,
-                 shared_ptr<Buffer> buffer, shared_ptr<Exploration> exploration,
+Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<Controller> controller,
                  shared_ptr<Evaluator> evaluator, shared_ptr<Monitor> monitor,
-                 int update_start, int update_interval,
-                 int target_update_interval, int final_step, int log_interval,
-                 int eval_interval) {
+                 int final_step, int log_interval, int eval_interval) {
   atari_ = atari;
-  model_ = model;
-  buffer_ = buffer;
-  exploration_ = exploration;
+  controller_ = controller;
   evaluator_ = evaluator;
   monitor_ = monitor;
 
-  update_start_ = update_start;
-  update_interval_ = update_interval;
-  target_update_interval_ = target_update_interval;
   final_step_ = final_step;
   log_interval_ = log_interval;
   eval_interval_ = eval_interval;
@@ -37,8 +29,6 @@ void Trainer::start() {
   vector<uint8_t> obs_t(observation_size);
   vector<uint8_t> obs_tm1(observation_size);
 
-  float *q_values = new float[atari_->get_action_size()];
-
   while (t_ < final_step_) {
     float rew_t = 0.0;
     float ter_t = 0.0;
@@ -46,20 +36,18 @@ void Trainer::start() {
     while (!ter_t) {
       ++t_;
 
-      model_->infer(obs_t, q_values);
-      uint8_t act_tm1 = exploration_->sample(q_values, t_);
-
+      // select action
+      uint8_t act_tm1 = controller_->act(t_, obs_t);
       memcpy(obs_tm1.data(), obs_t.data(), observation_size);
       atari_->step(act_tm1, &obs_t, &rew_t, &ter_t);
 
-      buffer_->add(obs_tm1, act_tm1, rew_t, obs_t, ter_t);
-      if (t_ > update_start_ && t_ % update_interval_ == 0) {
-        float loss = update();
-        loss_monitor.add(loss);
-      }
+      // store transition
+      controller_->store(t_, obs_tm1, act_tm1, rew_t, obs_t, ter_t);
 
-      if (t_ % target_update_interval_ == 0)
-        model_->sync_target();
+      // update
+      float loss = controller_->update(t_);
+      if (loss > 0)
+        loss_monitor.add(loss);
 
       if (t_ % log_interval_ == 0) {
         reward_monitor.emit(t_);
@@ -74,13 +62,6 @@ void Trainer::start() {
     }
     reward_monitor.add(atari_->episode_reward());
   }
-
-  delete[] q_values;
-}
-
-float Trainer::update() {
-  BatchPtr batch = buffer_->sample(model_->batch_size());
-  return model_->train(batch);
 }
 
 }; // namespace dqn
