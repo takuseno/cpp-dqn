@@ -2,6 +2,7 @@
 
 #include <dqn/buffer.h>
 #include <dqn/encoder.h>
+#include <dqn/models/model.h>
 #include <dqn/nnabla_utils.h>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/functions.hpp>
@@ -15,29 +16,26 @@ namespace pf = nbla::parametric_functions;
 
 namespace dqn {
 
-class DQN {
+class DQN : public Model {
 public:
   DQN(int num_of_actions, int batch_size, float gamma, float lr, Context ctx);
-  void infer(const vector<uint8_t> &obs_t, float *q_values);
-  float train(BatchPtr batch);
-  void sync_target();
-  ParameterDirectory parameter_directory() { return params_; };
-  int batch_size() { return batch_size_; }
+  virtual void infer(const vector<uint8_t> &obs_t, vector<float> *q_values);
+  virtual float train(BatchPtr batch);
+  virtual void sync_target();
+
+protected:
+  virtual void build();
+  virtual CgVariablePtr q_network(CgVariablePtr obss_t,
+                                  ParameterDirectory params);
 
 private:
-  int num_of_actions_, batch_size_;
   float gamma_, lr_;
-  Context ctx_, cpu_ctx_;
-  ParameterDirectory params_;
   shared_ptr<Solver> solver_;
   // inputs
   CgVariablePtr obs_t_, obss_t_, acts_t_, rews_tp1_, obss_tp1_, ters_tp1_;
   // outputs
   CgVariablePtr q_values_, loss_;
   vector<CgVariablePtr> assigns_;
-
-  void build();
-  CgVariablePtr q_network(CgVariablePtr obss_t, ParameterDirectory params);
 };
 
 }; // namespace dqn

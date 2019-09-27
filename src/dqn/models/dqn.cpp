@@ -2,20 +2,14 @@
 
 namespace dqn {
 
-DQN::DQN(int num_of_actions, int batch_size, float gamma, float lr,
-         Context ctx) {
-  num_of_actions_ = num_of_actions;
-  batch_size_ = batch_size;
+DQN::DQN(int num_of_actions, int batch_size, float gamma, float lr, Context ctx)
+    : Model(num_of_actions, batch_size, ctx) {
   gamma_ = gamma;
   lr_ = lr;
-  ctx_ = ctx;
-  cpu_ctx_ = Context({"cpu:float"}, "CpuCachedArray", "0");
   build();
 }
 
 void DQN::build() {
-  params_ = ParameterDirectory();
-
   // entry variables
   obs_t_ = make_shared<CgVariable>(Shape_t({1, 4, 84, 84}), false);
   obss_t_ = make_shared<CgVariable>(Shape_t({batch_size_, 4, 84, 84}), false);
@@ -61,13 +55,14 @@ void DQN::build() {
   solver_->set_parameters(params_.get_parameters());
 }
 
-void DQN::infer(const vector<uint8_t> &obs_t, float *q_values) {
+void DQN::infer(const vector<uint8_t> &obs_t, vector<float> *q_values) {
   vector<vector<uint8_t> *> v_obs_t = {(vector<uint8_t> *)&obs_t};
   set_image(obs_t_, v_obs_t, cpu_ctx_);
   q_values_->forward(true, true);
   const float_t *q_values_d =
       q_values_->variable()->get_data_pointer<float_t>(cpu_ctx_);
-  memcpy(q_values, q_values_d, sizeof(float) * num_of_actions_);
+  q_values->resize(num_of_actions_);
+  memcpy(q_values->data(), q_values_d, sizeof(float) * num_of_actions_);
 }
 
 float DQN::train(BatchPtr batch) {

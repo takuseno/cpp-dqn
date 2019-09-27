@@ -25,9 +25,8 @@ TEST(ModelTest, ConstructGraph) {
   fill_vector(&obs_tp1);
 
   // check inference
-  float q_values[4];
-  memset(q_values, 0, sizeof(float) * 4);
-  model.infer(obs_t, q_values);
+  vector<float> q_values;
+  model.infer(obs_t, &q_values);
   for (int i = 0; i < 4; ++i) {
     ASSERT_NE(q_values[i], 0);
   }
