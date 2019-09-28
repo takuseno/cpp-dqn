@@ -35,6 +35,10 @@ endfunction()
 download_and_extract_library(googletest-release-1.7.0 .zip https://github.com/google/googletest/archive/release-1.7.0.zip)
 add_subdirectory(googletest-release-1.7.0)
 
+# google flags
+download_and_extract_library(gflags-2.2.2 .zip https://github.com/gflags/gflags/archive/v2.2.2.zip)
+add_subdirectory(gflags-2.2.2)
+
 # ALE
 if(USE_SDL)
   add_definitions(-D__USE_SDL)
