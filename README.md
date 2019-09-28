@@ -21,9 +21,14 @@ macOS and Linux are currently supported.
 - [atari-py](https://github.com/openai/atari-py) (only for extracting ROMs)
 
 ## build
+### nnabla
 Before building this repository, you need to install NNabla.
 See [official instruction](https://github.com/sony/nnabla/blob/master/doc/build/build_cpp_utils.md).
 
+If you use GPU, you additionally need to install CUDA extension of NNabla.
+See [official instruction](https://github.com/sony/nnabla-ext-cuda/blob/master/doc/build/build.md).
+
+### SDL
 By default, SDL libraries are used to build to render GUI. Then you need to install related libraries.
 If you need to omit this, you have to set `-DUSE_SDL=OFF`.
 ```
@@ -34,11 +39,12 @@ $ brew install sdl sdl_gfx sdl_image
 $ sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev libsdl-image1.2-dev
 ```
 
+### build DQN
 Finally, run the following codes to build DQN.
 ```
 $ mkdir build
 $ cd build
-$ cmake ..
+$ cmake .. # add -DGPU=ON option to build with cuda extension
 $ make
 ```
 

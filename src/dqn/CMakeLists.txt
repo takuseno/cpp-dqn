@@ -22,6 +22,11 @@ if (USE_SDL)
   target_link_libraries(dqn PUBLIC ${SDL_MAIN_LIBRARY})
 endif()
 
+if (GPU)
+  find_library(NNABLA_CUDA_LIBRARY nnabla_cuda HINTS /usr/local/lib)
+  target_link_libraries(dqn PUBLIC ${NNABLA_CUDA_LIBRARY})
+endif()
+
 find_library(NNABLA_LIBRARY nnabla HINTS /usr/local/lib)
 target_link_libraries(dqn
   PUBLIC

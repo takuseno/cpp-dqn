@@ -8,8 +8,14 @@
 #include <dqn/monitor.h>
 #include <dqn/trainer.h>
 #include <gflags/gflags.h>
+#include <nbla/global_context.hpp>
 #include <random>
 #include <time.h>
+
+#ifdef GPU
+#include <nbla/cuda/cudnn/init.hpp>
+#include <nbla/cuda/init.hpp>
+#endif
 
 using namespace std;
 using namespace dqn;
@@ -51,7 +57,15 @@ int main(int argc, char *argv[]) {
   if (!FLAGS_log.empty())
     logdir = FLAGS_log + "_" + logdir;
 
-  auto ctx = Context({"cpu:float"}, "CpuCachedArray", "0");
+#ifdef GPU
+  nbla::init_cudnn();
+  nbla::Context ctx{
+      {"cudnn:float", "cuda:float", "cpu:float"}, "CudaCachedArray", "0"};
+  cout << "GPU is enabled." << endl;
+#else
+  nbla::Context ctx{{"cpu:float"}, "CpuCachedArray", "0"};
+#endif
+  SingletonManager::get<GlobalContext>()->set_current_context(ctx);
 
   // environments
   auto atari =
