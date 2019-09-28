@@ -3,6 +3,7 @@
 #include <ale_interface.hpp>
 #include <algorithm>
 #include <array>
+#include <dqn/image_utils.h>
 #include <memory>
 #include <random>
 
