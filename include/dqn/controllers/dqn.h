@@ -19,6 +19,8 @@ public:
                      float rew_tp1, const vector<uint8_t> &obs_tp1,
                      float ter_tp1);
   virtual float update(int t);
+  virtual void save(const char *path) { model_->save(path); }
+  virtual void load(const char *path) { model_->load(path); }
 
 private:
   int update_start_, update_interval_, target_update_interval_;
