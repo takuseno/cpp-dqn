@@ -24,6 +24,10 @@ macOS and Linux are currently supported.
 ### nnabla
 Before building this repository, you need to install NNabla.
 See [official instruction](https://github.com/sony/nnabla/blob/master/doc/build/build_cpp_utils.md).
+Note that arguments of cmake must be as follows.
+```
+$ cmake -DBUILD_CPP_UTILS=ON -DBUILD_PYTHON_PACKAGE=OFF ..
+```
 
 If you use GPU, you additionally need to install CUDA extension of NNabla.
 See [official instruction](https://github.com/sony/nnabla-ext-cuda/blob/master/doc/build/build.md).
