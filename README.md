@@ -20,7 +20,14 @@ macOS and Linux are currently supported.
 - [gflags](https://github.com/gflags/gflags)
 - [atari-py](https://github.com/openai/atari-py) (only for extracting ROMs)
 
-## build
+## pull prebuilt docker container
+If you want to play with this implementation on docker container, please use the prebuilt container.
+```
+# see https://hub.docker.com/r/takuseno/cpp-dqn
+$ docker pull takuseno/cpp-dqn
+```
+
+## manual build
 ### nnabla
 Before building this repository, you need to install NNabla.
 See [official instruction](https://github.com/sony/nnabla/blob/master/doc/build/build_cpp_utils.md).
