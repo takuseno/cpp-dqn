@@ -28,7 +28,9 @@ if (GPU)
 endif()
 
 find_library(NNABLA_LIBRARY nnabla HINTS /usr/local/lib)
+find_library(NNABLA_UTILS_LIBRARY nnabla_utils HINTS /usr/local/lib)
 target_link_libraries(dqn
   PUBLIC
   ${NNABLA_LIBRARY}
+  ${NNABLA_UTILS_LIBRARY}
   ${PROJECT_SOURCE_DIR}/third_party/Arcade-Learning-Environment-master/libale.so)
