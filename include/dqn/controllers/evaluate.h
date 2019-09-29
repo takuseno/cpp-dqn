@@ -17,6 +17,8 @@ public:
                      float rew_tp1, const vector<uint8_t> &obs_tp1,
                      float ter_tp1) {}
   virtual float update(int t) { return -1; }
+  virtual void load(const char *path) {}
+  virtual void save(const char *path) {}
 
 private:
   shared_ptr<Model> model_;

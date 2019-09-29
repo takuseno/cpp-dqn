@@ -18,8 +18,7 @@ namespace dqn {
 
 class DQN : public Model {
 public:
-  DQN(int num_of_actions, int batch_size, float gamma, float lr, Nnp nnp,
-      Context ctx);
+  DQN(int num_of_actions, int batch_size, float gamma, float lr, Context ctx);
   virtual void infer(const vector<uint8_t> &obs_t, vector<float> *q_values);
   virtual float train(BatchPtr batch);
   virtual void sync_target();

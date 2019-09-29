@@ -9,6 +9,7 @@
 #include <dqn/trainer.h>
 #include <gflags/gflags.h>
 #include <nbla/global_context.hpp>
+#include <nbla_utils/nnp.hpp>
 #include <random>
 #include <time.h>
 
@@ -38,6 +39,7 @@ DEFINE_int32(final_step, 10000000, "step to finish training");
 DEFINE_int32(log_interval, 10000, "interval to emit log data");
 DEFINE_int32(eval_interval, 100000, "interval to perform evaluation");
 DEFINE_int32(eval_episodes, 10, "number of episodes to evaluate");
+DEFINE_int32(save_interval, 1000000, "interval to save parameters");
 
 int main(int argc, char *argv[]) {
   gflags::SetUsageMessage("Deep Q-Network powered by NNabla.");
@@ -95,7 +97,7 @@ int main(int argc, char *argv[]) {
       make_shared<EvaluateController>(model, eval_exploration);
 
   // performance monitor
-  auto monitor = make_shared<Monitor>(logdir.c_str());
+  auto monitor = make_shared<Monitor>(logdir);
 
   // evaluation loo
   auto evaluator = make_shared<Evaluator>(eval_atari, eval_controller, monitor,
@@ -103,6 +105,6 @@ int main(int argc, char *argv[]) {
 
   // training loop
   Trainer trainer(atari, controller, evaluator, monitor, FLAGS_final_step,
-                  FLAGS_log_interval, FLAGS_eval_interval);
+                  FLAGS_log_interval, FLAGS_eval_interval, FLAGS_save_interval);
   trainer.start();
 }

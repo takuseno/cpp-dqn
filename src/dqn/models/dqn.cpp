@@ -2,12 +2,10 @@
 
 namespace dqn {
 
-DQN::DQN(int num_of_actions, int batch_size, float gamma, float lr, NNp nnp,
-         Context ctx)
+DQN::DQN(int num_of_actions, int batch_size, float gamma, float lr, Context ctx)
     : Model(num_of_actions, batch_size, ctx) {
   gamma_ = gamma;
   lr_ = lr;
-  nnp_ = nnp;
   build();
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dqn/models/controller.h>
+#include <dqn/controllers/controller.h>
 #include <memory>
 #include <numeric>
 #include <sstream>
@@ -14,7 +14,6 @@
 #define LOG_BASE_DIR "logs"
 
 using namespace std;
-using namespace nbla;
 
 namespace dqn {
 
