@@ -1,5 +1,6 @@
 #pragma once
 
+#include <dqn/models/controller.h>
 #include <memory>
 #include <numeric>
 #include <sstream>
@@ -13,6 +14,7 @@
 #define LOG_BASE_DIR "logs"
 
 using namespace std;
+using namespace nbla;
 
 namespace dqn {
 
@@ -23,6 +25,7 @@ public:
   void print(const string &name, int t, const vector<float> &values);
   void add(const string &name);
   void close(const string &name);
+  void save_parameters(int t, shared_ptr<Controller> controller);
 
 private:
   void prepare_directory();
