@@ -26,7 +26,7 @@ If you want to play with this implementation on docker container, please use the
 # see https://hub.docker.com/r/takuseno/cpp-dqn
 $ docker pull takuseno/cpp-dqn
 $ docker run -it --rm --runtime nvidia --name cpp-dqn takuseno/cpp-dqn:latest bash
-$ ./bin/train -rom atari_roms/breakout.bin
+root@834182ee578b:/cpp-dqn# ./bin/train -rom atari_roms/breakout.bin
 ```
 
 ## build with docker
