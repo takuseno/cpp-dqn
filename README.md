@@ -1,4 +1,6 @@
 ![](https://github.com/takuseno/cpp-dqn/workflows/Build%20and%20Test/badge.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/takuseno/cpp-dqn)
+![GitHub](https://img.shields.io/github/license/takuseno/cpp-dqn)
 
 # cpp-dqn
 Deep Q-Network implementation written in C++ with NNabla.
