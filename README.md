@@ -13,8 +13,8 @@ macOS and Linux are currently supported.
 - [ ] use [CULE](https://github.com/NVlabs/cule) for further speed up.
 
 ## third party
-- [nnabla](https://github.com/sony/nnabla) (build this by yourself)
-- [nnabla-ext-cuda](https://github.com/sony/nnabla-ext-cuda) (build this by yourself)
+- [nnabla](https://github.com/sony/nnabla)
+- [nnabla-ext-cuda](https://github.com/sony/nnabla-ext-cuda)
 - [Arcade Learning Environment](https://github.com/mgbellemare/Arcade-Learning-Environment)
 - [googletest](https://github.com/google/googletest)
 - [gflags](https://github.com/gflags/gflags)
