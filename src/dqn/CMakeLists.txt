@@ -22,8 +22,16 @@ if (USE_SDL)
   target_link_libraries(dqn PUBLIC ${SDL_MAIN_LIBRARY})
 endif()
 
+# ALE
+target_link_libraries(dqn PUBLIC ${PROJECT_SOURCE_DIR}/third_party/Arcade-Learning-Environment-master/libale.so)
+
+# NNabla
 find_library(NNABLA_LIBRARY nnabla HINTS /usr/local/lib)
-target_link_libraries(dqn
-  PUBLIC
-  ${NNABLA_LIBRARY}
-  ${PROJECT_SOURCE_DIR}/third_party/Arcade-Learning-Environment-master/libale.so)
+find_library(NNABLA_UTILS_LIBRARY nnabla_utils HINTS /usr/local/lib)
+target_link_libraries(dqn PUBLIC ${NNABLA_LIBRARY} ${NNABLA_UTILS_LIBRARY})
+
+# NNabla CUDA extension
+if (GPU)
+  find_library(NNABLA_CUDA_LIBRARY nnabla_cuda HINTS /usr/local/lib)
+  target_link_libraries(dqn PUBLIC ${NNABLA_CUDA_LIBRARY})
+endif()

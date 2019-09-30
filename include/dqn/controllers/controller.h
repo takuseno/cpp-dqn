@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+#include <memory>
 #include <vector>
 
 using namespace std;
@@ -14,6 +16,8 @@ public:
                      float rew_tp1, const vector<uint8_t> &obs_tp1,
                      float ter_t) = 0;
   virtual float update(int t) = 0;
+  virtual void save(const char *path) = 0;
+  virtual void load(const char *path) = 0;
 };
 
 }; // namespace dqn

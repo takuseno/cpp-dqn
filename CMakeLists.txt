@@ -7,6 +7,7 @@ project(dqn CXX)
 
 option(USE_SDL "Use SDL for ALE" ON)
 option(DEBUG "Enable debug option" OFF)
+option(GPU "Enable gpu" OFF)
 
 if (DEBUG)
   set(COMPILE_OPTION "-g -O0")

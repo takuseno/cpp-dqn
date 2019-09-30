@@ -93,22 +93,21 @@ void Atari::copy_current_obs_to_input(vector<uint8_t> *obs) {
 }
 
 void Atari::update_current_screen() {
-  memcpy(last_screen_.data(), current_screen_.data(), RAW_IMAGE_SIZE);
-  ale_->getScreenGrayscale(current_screen_);
+  memcpy(last_screen_.data(), current_screen_.data(), RESIZED_IMAGE_SIZE);
+  vector<uint8_t> screen;
+  ale_->getScreenGrayscale(screen);
+  resize(&current_screen_, screen, {RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH},
+         {RAW_IMAGE_HEIGHT, RAW_IMAGE_WIDTH});
 }
 
 void Atari::copy_screens_to_current_obs() {
   for (int i = 0; i < RESIZED_IMAGE_HEIGHT; ++i) {
     for (int j = 0; j < RESIZED_IMAGE_WIDTH; ++j) {
       int index = i * RESIZED_IMAGE_WIDTH + j;
-      int target_y = (float)i * RAW_IMAGE_HEIGHT / RESIZED_IMAGE_HEIGHT;
-      int target_x = (float)j * RAW_IMAGE_WIDTH / RESIZED_IMAGE_WIDTH;
-      int target_index = target_y * RAW_IMAGE_WIDTH + target_x;
-
-      int current_pixel = current_screen_.at(target_index);
-      int last_pixel = last_screen_.at(target_index);
-      uint8_t max_pixel =
-          current_pixel > last_pixel ? current_pixel : last_pixel;
+      uint8_t current_pixel = current_screen_.at(index);
+      uint8_t last_pixel = last_screen_.at(index);
+      // set maximum pixel between last two screens
+      uint8_t max_pixel = max(current_pixel, last_pixel);
       current_obs_[index] = max_pixel;
     }
   }
@@ -119,9 +118,9 @@ void Atari::reset_data() {
   episode_reward_ = 0.0;
 
   // fill screens with 0
-  current_screen_.resize(RAW_IMAGE_SIZE);
+  current_screen_.resize(RESIZED_IMAGE_SIZE);
   memset(current_screen_.data(), 0, current_screen_.size());
-  last_screen_.resize(RAW_IMAGE_SIZE);
+  last_screen_.resize(RESIZED_IMAGE_SIZE);
   memset(last_screen_.data(), 0, last_screen_.size());
 
   // fill obs with 0

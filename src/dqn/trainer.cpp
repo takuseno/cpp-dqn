@@ -4,7 +4,8 @@ namespace dqn {
 
 Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<Controller> controller,
                  shared_ptr<Evaluator> evaluator, shared_ptr<Monitor> monitor,
-                 int final_step, int log_interval, int eval_interval) {
+                 int final_step, int log_interval, int eval_interval,
+                 int save_interval) {
   atari_ = atari;
   controller_ = controller;
   evaluator_ = evaluator;
@@ -13,6 +14,7 @@ Trainer::Trainer(shared_ptr<Atari> atari, shared_ptr<Controller> controller,
   final_step_ = final_step;
   log_interval_ = log_interval;
   eval_interval_ = eval_interval;
+  save_interval_ = save_interval;
 
   t_ = 0;
 }
@@ -54,6 +56,11 @@ void Trainer::start() {
         loss_monitor.emit(t_);
       }
 
+      // save parameters as nnp
+      if (t_ % save_interval_ == 0)
+        monitor_->save_parameters(t_, controller_);
+
+      // start evaluation
       if (t_ % eval_interval_ == 0)
         evaluator_->start(t_);
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <dqn/controllers/controller.h>
 #include <memory>
 #include <numeric>
 #include <sstream>
@@ -23,6 +24,7 @@ public:
   void print(const string &name, int t, const vector<float> &values);
   void add(const string &name);
   void close(const string &name);
+  void save_parameters(int t, shared_ptr<Controller> controller);
 
 private:
   void prepare_directory();

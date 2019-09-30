@@ -3,6 +3,8 @@
 #include <dqn/buffer.h>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/parametric_functions.hpp>
+#include <nbla_utils/nnp.hpp>
+using namespace nbla;
 
 using namespace std;
 using namespace nbla;
@@ -24,6 +26,14 @@ public:
   virtual void sync_target() = 0;
   virtual ParameterDirectory parameter_directory() { return params_; };
   virtual int batch_size() { return batch_size_; }
+  virtual void save(const char *path) {
+    nbla::utils::nnp::Nnp nnp(ctx_);
+    nnp.save_parameters(path);
+  }
+  virtual void load(const char *path) {
+    nbla::utils::nnp::Nnp nnp(ctx_);
+    nnp.add(path);
+  }
 
 protected:
   int num_of_actions_, batch_size_;
