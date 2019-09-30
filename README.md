@@ -25,6 +25,20 @@ If you want to play with this implementation on docker container, please use the
 ```
 # see https://hub.docker.com/r/takuseno/cpp-dqn
 $ docker pull takuseno/cpp-dqn
+$ docker run -it --rm --runtime nvidia --name cpp-dqn takuseno/cpp-dqn:latest bash
+$ ./bin/train -rom atari_roms/breakout.bin
+```
+
+## build with docker
+To skip manual build, use prebuilt container and mount the current directory by running the following commands.
+```
+$ ./scripts/up.sh --runtime nvidia
+root@834182ee578b:/cpp-dqn# mkdir build
+root@834182ee578b:/cpp-dqn# cd build
+root@834182ee578b:/cpp-dqn/build# cmake .. -DGPU=ON
+root@834182ee578b:/cpp-dqn/build# make
+root@834182ee578b:/cpp-dqn/build# cd ..
+root@834182ee578b:/cpp-dqn# ./bin/train -rom atari_roms/breakout.bin
 ```
 
 ## manual build
