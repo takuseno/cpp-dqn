@@ -23,11 +23,12 @@ macOS and Linux are currently supported.
 ## pull prebuilt docker container
 If you want to play with this implementation on docker container, please use the prebuilt container.
 ```
-# see https://hub.docker.com/r/takuseno/cpp-dqn
 $ docker pull takuseno/cpp-dqn
 $ docker run -it --rm --runtime nvidia --name cpp-dqn takuseno/cpp-dqn:latest bash
 root@834182ee578b:/cpp-dqn# ./bin/train -rom atari_roms/breakout.bin
 ```
+
+DockerHub: https://hub.docker.com/r/takuseno/cpp-dqn
 
 ## build with docker
 To skip manual build, use prebuilt container and mount the current directory by running the following commands.
