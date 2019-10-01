@@ -9,15 +9,10 @@ Evaluator::Evaluator(shared_ptr<Atari> atari, shared_ptr<Controller> controller,
   reward_monitor_ = make_shared<MonitorMultiColumnSeries>(
       monitor, "eval_reward", num_episodes);
   num_episodes_ = num_episodes;
-
-  observation_size_ = 1;
-  auto observation_shape = atari_->get_observation_size();
-  for (int i = 0; i < observation_shape.size(); ++i)
-    observation_size_ *= observation_shape[i];
 }
 
 void Evaluator::start(int t) {
-  vector<uint8_t> obs(observation_size_);
+  vector<uint8_t> obs;
 
   int episode_count = 0;
   while (episode_count < num_episodes_) {

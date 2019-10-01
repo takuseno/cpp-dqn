@@ -24,12 +24,8 @@ void Trainer::start() {
   MonitorSeries reward_monitor(monitor_, "reward", 100);
   MonitorSeries loss_monitor(monitor_, "loss", 10000);
 
-  int observation_size = 1;
-  auto observation_shape = atari_->get_observation_size();
-  for (int i = 0; i < observation_shape.size(); ++i)
-    observation_size *= observation_shape[i];
-  vector<uint8_t> obs_t(observation_size);
-  vector<uint8_t> obs_tm1(observation_size);
+  vector<uint8_t> obs_t;
+  vector<uint8_t> obs_tm1;
 
   while (t_ < final_step_) {
     float rew_t = 0.0;
@@ -40,7 +36,8 @@ void Trainer::start() {
 
       // select action
       uint8_t act_tm1 = controller_->act(t_, obs_t);
-      memcpy(obs_tm1.data(), obs_t.data(), observation_size);
+      obs_tm1.resize(obs_t.size());
+      memcpy(obs_tm1.data(), obs_t.data(), obs_t.size());
       atari_->step(act_tm1, &obs_t, &rew_t, &ter_t);
 
       // store transition
