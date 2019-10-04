@@ -47,7 +47,7 @@ public:
     // parameters
     for (int i = 0; i < num_of_variables; ++i) {
       auto variable = params[i].second;
-      float *v_d = variable->cast_data_and_get_pointer<float>(cpu_ctx_, true);
+      const float *v_d = variable->get_data_pointer<float>(cpu_ctx_);
       fout.write((char *)v_d, sizeof(float) * variable->size());
     }
 
