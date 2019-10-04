@@ -22,24 +22,24 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # build NNabla
-RUN wget https://github.com/sony/nnabla/archive/v1.1.0.zip \
-  && unzip v1.1.0.zip \
-  && rm v1.1.0.zip \
-  && mkdir nnabla-1.1.0/build \
-  && cd nnabla-1.1.0/build \
+RUN wget https://github.com/sony/nnabla/archive/v1.2.0.zip \
+  && unzip v1.2.0.zip \
+  && rm v1.2.0.zip \
+  && mkdir nnabla-1.2.0/build \
+  && cd nnabla-1.2.0/build \
   && cmake .. -DBUILD_CPP_UTILS=ON -DBUILD_PYTHON_PACKAGE=OFF -DNNABLA_UTILS_WITH_HDF5=OFF \
   && make \
   && make install \
   && cd ../..
 
 # build CUDA extension
-RUN wget https://github.com/sony/nnabla-ext-cuda/archive/v1.1.0.zip \
-  && unzip v1.1.0.zip \
-  && rm v1.1.0.zip \
-  && mkdir nnabla-ext-cuda-1.1.0/build \
-  && cd nnabla-ext-cuda-1.1.0/build \
-  && cmake .. -DNNABLA_DIR=../../nnabla-1.1.0 \
-     -DCPPLIB_LIBRARY=../../nnabla-1.1.0/build/lib/libnnabla.so \
+RUN wget https://github.com/sony/nnabla-ext-cuda/archive/v1.2.0.zip \
+  && unzip v1.2.0.zip \
+  && rm v1.2.0.zip \
+  && mkdir nnabla-ext-cuda-1.2.0/build \
+  && cd nnabla-ext-cuda-1.2.0/build \
+  && cmake .. -DNNABLA_DIR=../../nnabla-1.2.0 \
+     -DCPPLIB_LIBRARY=../../nnabla-1.2.0/build/lib/libnnabla.so \
      -DBUILD_PYTHON_PACKAGE=OFF \
   && make \
   && make install \
