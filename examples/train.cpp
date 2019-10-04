@@ -22,6 +22,7 @@ using namespace std;
 using namespace dqn;
 
 DEFINE_string(rom, "", "path to ROM file");
+DEFINE_string(load, "", "path to parameter file");
 DEFINE_bool(gui, false, "render GUI window");
 DEFINE_string(log, "experiment", "log directory name");
 DEFINE_int32(buffer_size, 100000, "size of replay buffer");

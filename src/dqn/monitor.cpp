@@ -46,8 +46,9 @@ void Monitor::prepare_directory() {
 void Monitor::save_parameters(int t, shared_ptr<Controller> controller) {
   ostringstream ss;
   ss << LOG_BASE_DIR << "/" << logdir_ << "/"
-     << "model_" << t << ".nnp";
+     << "model_" << t << ".params";
   controller->save(ss.str().c_str());
+  fprintf(stdout, "parameters are saved to %s\n", ss.str().c_str());
 }
 
 MonitorSeries::MonitorSeries(shared_ptr<Monitor> monitor, const string &name,

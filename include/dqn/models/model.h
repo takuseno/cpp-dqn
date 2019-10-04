@@ -1,9 +1,11 @@
 #pragma once
 
 #include <dqn/buffer.h>
+#include <dqn/exception.h>
+#include <fstream>
+#include <iostream>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/parametric_functions.hpp>
-#include <nbla_utils/nnp.hpp>
 using namespace nbla;
 
 using namespace std;
@@ -27,12 +29,57 @@ public:
   virtual ParameterDirectory parameter_directory() { return params_; };
   virtual int batch_size() { return batch_size_; }
   virtual void save(const char *path) {
-    nbla::utils::nnp::Nnp nnp(ctx_);
-    nnp.save_parameters(path);
+    // TODO: replace this process with official NNabla API
+    auto params = params_.get_parameters();
+    int num_of_variables = params.size();
+    vector<int> sizes;
+    for (int i = 0; i < num_of_variables; ++i)
+      sizes.push_back(params[i].second->size());
+    ofstream fout;
+    fout.open(path, ios::out | ios::binary | ios::trunc);
+    DQN_CHECK(fout, "failed to create file");
+
+    // header
+    fout.write((char *)&num_of_variables, sizeof(int));
+    for (int i = 0; i < num_of_variables; ++i)
+      fout.write((char *)&sizes[i], sizeof(int));
+
+    // parameters
+    for (int i = 0; i < num_of_variables; ++i) {
+      auto variable = params[i].second;
+      float *v_d = variable->cast_data_and_get_pointer<float>(cpu_ctx_, true);
+      fout.write((char *)v_d, sizeof(float) * variable->size());
+    }
+
+    fout.close();
   }
   virtual void load(const char *path) {
-    nbla::utils::nnp::Nnp nnp(ctx_);
-    nnp.add(path);
+    // TODO: replace this process with official NNabla API
+    auto params = params_.get_parameters();
+
+    ifstream fin(path, ios::in | ios::binary);
+    DQN_CHECK(fin, "failed to open file");
+
+    int num_of_variables;
+    fin.read((char *)&num_of_variables, sizeof(int));
+    DQN_CHECK(num_of_variables == params.size(),
+              "mismatched number of variables");
+
+    vector<int> sizes;
+    for (int i = 0; i < num_of_variables; ++i) {
+      int size;
+      fin.read((char *)&size, sizeof(int));
+      DQN_CHECK(size == params[i].second->size(), "mismatched variable size");
+      sizes.push_back(size);
+    }
+
+    for (int i = 0; i < num_of_variables; ++i) {
+      auto variable = params[i].second;
+      float *v_d = variable->cast_data_and_get_pointer<float>(cpu_ctx_, true);
+      fin.read((char *)v_d, sizeof(float) * sizes[i]);
+    }
+
+    fin.close();
   }
 
 protected:
