@@ -90,6 +90,10 @@ int main(int argc, char *argv[]) {
   auto model = make_shared<DQN>(atari->get_action_size(), FLAGS_batch_size,
                                 FLAGS_gamma, FLAGS_lr, ctx);
 
+  // load parameters
+  if (!FLAGS_load.empty())
+    model->load(FLAGS_load.c_str());
+
   // controllers
   auto controller = make_shared<DQNController>(
       model, buffer, exploration, FLAGS_learning_start, FLAGS_update_interval,
@@ -100,7 +104,7 @@ int main(int argc, char *argv[]) {
   // performance monitor
   auto monitor = make_shared<Monitor>(logdir);
 
-  // evaluation loo
+  // evaluation loop
   auto evaluator = make_shared<Evaluator>(eval_atari, eval_controller, monitor,
                                           FLAGS_eval_episodes);
 
