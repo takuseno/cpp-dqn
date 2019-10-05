@@ -6,7 +6,6 @@
 #include <iostream>
 #include <nbla/computation_graph/computation_graph.hpp>
 #include <nbla/parametric_functions.hpp>
-using namespace nbla;
 
 using namespace std;
 using namespace nbla;
