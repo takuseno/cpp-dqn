@@ -7,6 +7,11 @@ if(GPU)
 endif()
 
 include_directories(${PROJECT_BINARY_DIR}/third_party/gflags-2.2.2/include)
+
 add_executable(train train.cpp)
 target_link_libraries(train dqn gflags)
 set_property(TARGET train PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+
+add_executable(play play.cpp)
+target_link_libraries(play dqn gflags)
+set_property(TARGET play PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")

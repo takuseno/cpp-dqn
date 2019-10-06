@@ -34,6 +34,22 @@ root@834182ee578b:/cpp-dqn# ./bin/train -rom atari_roms/breakout.bin
 
 DockerHub: https://hub.docker.com/r/takuseno/cpp-dqn
 
+## play with a pretrained model
+```
+root@834182ee578b:/cpp-dqn# ./bin/play -rom atari_roms/breakout.bin -load logs/experiment_xxxx/10000000.param
+```
+If you want to see GUI window through the container, try the following commands.
+```
+$ xhost + # this is required only once
+$ docker run -it --rm --runtime nvidia \
+  -v /tmp/.X11-unix/:/tmp/.X11-unix \
+  --shm-size=256m \
+  -e QT_X11_NO_MITSHM=1 \
+  -e DISPLAY=$DISPLAY \
+  --name cpp-dqn takuseno/cpp-dqn:latest bash
+root@834182ee578b:/cpp-dqn# ./bin/play -rom atari_roms/breakout.bin -load logs/experiment_xxxx/10000000.param -gui
+```
+
 ## build with docker
 To skip manual build, use prebuilt container and mount the current directory by running the following commands.
 ```
@@ -45,6 +61,8 @@ root@834182ee578b:/cpp-dqn/build# make
 root@834182ee578b:/cpp-dqn/build# cd ..
 root@834182ee578b:/cpp-dqn# ./bin/train -rom atari_roms/breakout.bin
 ```
+
+As `scripts/up.sh` will enable X11 to show GUI window, you can use `-gui` option to see rendered screens.
 
 ## manual build
 ### nnabla

@@ -9,7 +9,6 @@
 #include <dqn/trainer.h>
 #include <gflags/gflags.h>
 #include <nbla/global_context.hpp>
-#include <nbla_utils/nnp.hpp>
 #include <random>
 #include <time.h>
 
