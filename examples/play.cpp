@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
   auto monitor = make_shared<Monitor>(logdir);
 
   // evaluation loop
-  auto evaluator = make_shared<Evaluator>(atari, controller, monitor,
-                                          FLAGS_eval_episodes);
+  auto evaluator =
+      make_shared<Evaluator>(atari, controller, monitor, FLAGS_eval_episodes);
   evaluator->start(0);
 }
