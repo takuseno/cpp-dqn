@@ -24,6 +24,8 @@ TEST(ImageUtilsTest, Resize) {
     int target_y = 3 * y;
     int target_index = 30 * target_y + target_x;
 
+    cout << dst[i] << endl;
+
     ASSERT_EQ(dst[i], src[target_index]);
   }
 }

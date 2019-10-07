@@ -23,6 +23,8 @@ inline void resize(vector<uint8_t> *dst, const vector<uint8_t> &src,
   dst->resize(dst_size);
 
   // bilinear interpolation
+  float x_ratio = ((float)src_width) / dst_width;
+  float y_ratio = ((float)src_height) / dst_height;
   for (int i = 0; i < dst_size; ++i) {
     // destination position
     int dst_x = i % dst_width;
@@ -30,27 +32,29 @@ inline void resize(vector<uint8_t> *dst, const vector<uint8_t> &src,
     int dst_index = dst_y * dst_width + dst_x;
 
     // source position
-    float src_x = ((float)dst_x) * src_width / dst_width;
-    float src_y = ((float)dst_y) * src_height / dst_height;
-    float left_x = floor(src_x);
-    float right_x = ceil(src_x);
-    float top_y = floor(src_y);
-    float bottom_y = ceil(src_y);
+    float left_x = floor(dst_x * x_ratio);
+    float right_x = floor((dst_x + 1) * x_ratio);
+    float top_y = floor(dst_y * y_ratio);
+    float bottom_y = floor((dst_y + 1) * y_ratio);
 
-    // source pixel values
-    float left_top = src.at(int(top_y * src_width + left_x));
-    float right_top = src.at(int(top_y * src_width + right_x));
-    float left_bottom = src.at(int(bottom_y * src_width + left_x));
-    float right_bottom = src.at(int(bottom_y * src_width + right_x));
-
-    // vertical interpolation
-    float dy = bottom_y - src_y;
-    float left = dy * left_top + (1 - dy) * left_bottom;
-    float right = dy * right_top + (1 - dy) * right_bottom;
-
-    // horizontal interpolation and set
-    float dx = right_x - src_x;
-    dst->data()[dst_index] = dx * left + (1 - dx) * right;
+    uint8_t dst_pixel = 0;
+    for (int x = left_x; x <= right_x; ++x) {
+      float inter_x_ratio = 1.0;
+      if (x == left_x)
+        inter_x_ratio = x + 1 - ((float)dst_x) * x_ratio;
+      else if (x == right_x)
+        inter_x_ratio = ((float)(dst_x + 1)) * x_ratio - x;
+      for (int y = top_y; y <= bottom_y; ++y) {
+        float inter_y_ratio = 1.0;
+        if (y == top_y)
+          inter_y_ratio = y + 1 - ((float)dst_y) * y_ratio;
+        else if (y == bottom_y)
+          inter_y_ratio = ((float)(dst_y + 1)) * y_ratio - y;
+        uint8_t src_pixel = src.at(int(y * src_width + x));
+        dst_pixel += (inter_x_ratio / x_ratio) * (inter_y_ratio / y_ratio) * src_pixel;
+      }
+    }
+    dst->data()[dst_index] = dst_pixel;
   }
 }
 
