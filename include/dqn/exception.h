@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <string.h>
 
 #define _FILE (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
