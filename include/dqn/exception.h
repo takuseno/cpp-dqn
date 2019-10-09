@@ -3,8 +3,8 @@
 #include <exception>
 #include <iostream>
 #include <sstream>
-#include <string>
 #include <string.h>
+#include <string>
 
 #define _FILE (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
