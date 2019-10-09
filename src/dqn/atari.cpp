@@ -6,6 +6,8 @@ Atari::Atari(const char *rom, bool gui, bool episodic_life, bool random_start,
              default_random_engine rengine) {
   ale_ = make_shared<ALEInterface>(gui);
   ale_->loadROM(rom);
+  // disable sticky action
+  ale_->setFloat("repeat_action_probability", 0.0);
   random_start_ = random_start;
   episodic_life_ = episodic_life;
   rengine_ = rengine;
