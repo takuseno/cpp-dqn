@@ -1,7 +1,7 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
-#include <cmath>
 #include <dqn/exception.h>
 #include <vector>
 

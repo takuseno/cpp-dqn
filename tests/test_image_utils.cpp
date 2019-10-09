@@ -20,12 +20,19 @@ TEST(ImageUtilsTest, Resize) {
     int x = i % 10;
     int y = i / 10;
 
-    int target_x = 3 * x;
-    int target_y = 3 * y;
-    int target_index = 30 * target_y + target_x;
+    int left_x = 3 * x;
+    int right_x = min(3 * (x + 1), 30);
+    int top_y = 3 * y;
+    int bottom_y = min(3 * (y + 1), 30);
+    int area_size = (right_x - left_x) * (bottom_y - top_y);
 
-    cout << dst[i] << endl;
-
-    ASSERT_EQ(dst[i], src[target_index]);
+    float pixel = 0;
+    for (int y = top_y; y < bottom_y; ++y) {
+      for (int x = left_x; x < right_x; ++x) {
+        pixel += (float)src[y * 30 + x] / area_size;
+      }
+    }
+    uint8_t diff = abs((uint8_t)pixel - dst[i]);
+    ASSERT_EQ(diff < 2, true);
   }
 }
