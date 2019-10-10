@@ -52,7 +52,7 @@ void DQN::build() {
 
   // setup solver
   solver_ = create_RMSpropSolver(ctx_, lr_, 0.95, 0.01);
-  solver_->set_parameters(params_.get_parameters());
+  solver_->set_parameters(trainable_params);
 }
 
 void DQN::infer(const vector<uint8_t> &obs_t, vector<float> *q_values) {
