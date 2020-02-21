@@ -51,14 +51,18 @@ BatchPtr Buffer::sample(int batch_size) {
   batch->ters_tp1.reserve(batch_size);
 
   uniform_int_distribution<> dist(0, size() - 1);
-  for (int i = 0; i < batch_size; ++i) {
+  set<int> indices;
+  while (indices.size() < batch_size) {
     int index = dist(rengine_);
+    if (indices.find(index) != indices.end())
+      continue;
     TransitionPtr ptr = buffer_->at(index);
     batch->obss_t.push_back(&(ptr->obs_t));
     batch->acts_t.push_back(ptr->act_t);
     batch->obss_tp1.push_back(&(ptr->obs_tp1));
     batch->rews_tp1.push_back(ptr->rew_tp1);
     batch->ters_tp1.push_back(ptr->ter_tp1);
+    indices.insert(index);
   }
   return batch;
 }
