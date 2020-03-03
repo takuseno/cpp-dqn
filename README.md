@@ -1,8 +1,6 @@
 ![](https://github.com/takuseno/cpp-dqn/workflows/Build%20and%20Test/badge.svg)
 ![Docker Pulls](https://img.shields.io/docker/pulls/takuseno/cpp-dqn)
 ![GitHub](https://img.shields.io/github/license/takuseno/cpp-dqn)
-[![Job Status](https://inspecode.rocro.com/badges/github.com/takuseno/cpp-dqn/status?token=rveDM9KE8R9uLcH6j9ZrHgHg6jFqLVupzzsBTsEyA9o)](https://inspecode.rocro.com/jobs/github.com/takuseno/cpp-dqn/latest?completed=true)
-[![Report](https://inspecode.rocro.com/badges/github.com/takuseno/cpp-dqn/report?token=rveDM9KE8R9uLcH6j9ZrHgHg6jFqLVupzzsBTsEyA9o&branch=master)](https://inspecode.rocro.com/reports/github.com/takuseno/cpp-dqn/branch/master/summary)
 
 # cpp-dqn
 Deep Q-Network implementation written in C++ with NNabla.
